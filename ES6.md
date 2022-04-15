@@ -1,0 +1,5 @@
+#### ES6
+
+### The difference among const,let and var
+
+The const means the constant, so we could not change the value at anywhere, because it's characteristicwe have to give it a value once it is difined. Bu the let is diffeeent, it is a real variable, we could change the value of it in it's scope, so you can also choose not to give it an value when it is not difined. As we said the let can be changed in it's scope, and it can not be redifined in it's scope. But after we leave it's scope, we could redifine it. Like when we are in a local scope, we could redifine a global variable of let. Pnce we re difined this global let variable, this redifined one will become a local variable, we could not get value of this one any more, because it's an local variable, but in this local scope the global variable will make no difference instead the local variable takes it's place. And the main difference between let and var is the var canbe redifined at anywhere, even when the redifined variable is just fllowed by the new line, so it means the var is always a global variable whatever where is has been defined.
