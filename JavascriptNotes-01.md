@@ -1,6 +1,6 @@
 # Javascript Basicis Notes Review
 
-## String properties and Method:
+## String properties and Methods:
 
 #### toUpperCase:
 
