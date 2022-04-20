@@ -88,3 +88,5 @@ We use it to get the start index of the of the specific String in current String
 #### str_replace(target String,substitute String,current String)
 
 We will use the substitute string to replace the target String in current String
+
+#####
