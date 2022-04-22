@@ -952,10 +952,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 #### PHP $\_POST
 
-PHP $\_POST is a PHP super global variable which is used to collect form data after submitting an HTML form with method="post". $\_POST is also widely used to pass variables.
-
-The example below shows a form with an input field and a submit button. When a user submits the data by clicking on "Submit", the form data is sent to the file specified in the action attribute of the \<form> tag. In this example, we point to the file itself for processing form data. If you wish to use another PHP file to process form data, replace that with the filename of your choice. Then, we can use the super global variable $\_POST to collect the value of the input field:<br>
-Example:
+Both \_POST and $\_REQUEST are the super global variable, and they are designed to be retrive the values in matching method, and here's a simple example:
 
 ```php
 <html>
@@ -1124,27 +1121,559 @@ The delimiter can be any character that is not a letter, number, backslash or sp
 </tr>
 </table>
 
+#### Quantifiers
+
+Quantifiers define quantities:
+
 <table>
-<th></th>
-<th>Matches any string that contains at least one n</th>
+<th>Quantifier</th>
+<th>Description</th>
 <tr>
-<td></td>
+<td>n+</td>
+<td>Matches any string that contains at least one n</td>
+</tr>
+<td>n*</td>
 <td>Matches any string that contains zero or more occurrences of n</td>
 </tr>
 <tr>
-<td></td>
+<td>n?</td>
 <td>Matches any string that contains zero or one occurrences of n</td>
 </tr>
 <tr>
-<td></td>
+<td>n{x}</td>
 <td>Matches any string that contains a sequence of X n's</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<tr>
+<td>n{x,y}</td>
+<td>Matches any string that contains a sequence of X to Y n's</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<td>n{x,}</td>
+<td>Matches any string that contains a sequence of at least X n's</td>
 </tr>
 </table>
+
+#### PHP Forms
+
+We have learned when we want retrive the data from client-side in the server, we could use
+
+```php
+$_GET['name']
+```
+
+to get the data sent with GET method and use
+
+```php
+$_POST['name']
+```
+
+to get the data sent with POST method.<br>
+Now we start to learn the PHP Form Validation:
+
+### Method: htmlspecialchars(str)
+
+This method is foremost important for preventing XSS attacks. So what is a XSS attack? Fore Example:
+
+```php
+/*It is a server page:*/
+<?php
+// define variables and set to empty values
+$name = $email = $gender = $comment = $website = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $name = $_POST["name"];
+  $email = $_POST["email"];
+  $website = $_POST["website"];
+  $comment = $_POST["comment"]);
+  $gender = $_POST["gender"];
+}
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+?>
+
+<?php
+echo "<h2>Your Input:</h2>";
+echo $name;
+echo "<br>";
+echo $email;
+echo "<br>";
+echo $website;
+echo "<br>";
+echo $comment;
+echo "<br>";
+echo $gender;
+?>
+```
+
+This is a client-side page:
+
+```php
+<!DOCTYPE HTML>
+<html>
+<head>
+</head>
+<body>
+<h2>PHP Form Validation Example</h2>
+<form method="post" action="<?php echo "target.php"?>">
+  Name: <input type="text" name="name">
+  <br><br>
+  E-mail: <input type="text" name="email">
+  <br><br>
+  Website: <input type="text" name="website">
+  <br><br>
+  Comment: <textarea name="comment" rows="5" cols="40"></textarea>
+  <br><br>
+  Gender:
+  <input type="radio" name="gender" value="female">Female
+  <input type="radio" name="gender" value="male">Male
+  <input type="radio" name="gender" value="other">Other
+  <br><br>
+  <input type="submit" name="submit" value="Submit">
+</form>
+
+</body>
+</html>
+```
+
+When a hacker add a string:"\<script>alert("Hello")\</script>" after your input . After you submit the form to the server, this script will be executed. And you will find this alert on the page.But when you use method:
+test_input($data) everything will change:
+
+```php
+<?php
+// define variables and set to empty values
+$name = $email = $gender = $comment = $website = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $name = test_input($_POST["name"]);
+  $email = test_input($_POST["email"]);
+  $website = test_input($_POST["website"]);
+  $comment = test_input($_POST["comment"]);
+  $gender = test_input($_POST["gender"]);
+}
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+?>
+
+<?php
+echo "<h2>Your Input:</h2>";
+echo $name;
+echo "<br>";
+echo $email;
+echo "<br>";
+echo $website;
+echo "<br>";
+echo $comment;
+echo "<br>";
+echo $gender;
+?>
+```
+
+Beacause when you are using a htmlspecialchars, all the <>will become &lt and &gt, so the script won't be executed.
+
+##### Note:When we are using $\_SERVER["PHP_SELF"], we need add a htmlspecialchars too in order to protect the submit.
+
+And when we want to set the Required attribute, we could do something like this:
+
+```php
+<?php
+// define variables and set to empty values
+$nameErr = $emailErr = $genderErr = $websiteErr = "";
+$name = $email = $gender = $comment = $website = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (empty($_POST["name"])) {
+    $nameErr = "Name is required";
+  } else {
+    $name = test_input($_POST["name"]);
+  }
+
+  if (empty($_POST["email"])) {
+    $emailErr = "Email is required";
+  } else {
+    $email = test_input($_POST["email"]);
+  }
+
+  if (empty($_POST["website"])) {
+    $website = "";
+  } else {
+    $website = test_input($_POST["website"]);
+  }
+
+  if (empty($_POST["comment"])) {
+    $comment = "";
+  } else {
+    $comment = test_input($_POST["comment"]);
+  }
+
+  if (empty($_POST["gender"])) {
+    $genderErr = "Gender is required";
+  } else {
+    $gender = test_input($_POST["gender"]);
+  }
+}
+?>
+<?php
+function test_input($data){
+  $data=htmlspecialchars($data);
+  return $data;
+}
+?>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+
+Name: <input type="text" name="name">
+<span class="error">* <?php echo $nameErr;?></span>
+<br><br>
+E-mail:
+<input type="text" name="email">
+<span class="error">* <?php echo $emailErr;?></span>
+<br><br>
+Website:
+<input type="text" name="website">
+<span class="error"><?php echo $websiteErr;?></span>
+<br><br>
+Comment: <textarea name="comment" rows="5" cols="40"></textarea>
+<br><br>
+Gender:
+<input type="radio" name="gender" value="female">Female
+<input type="radio" name="gender" value="male">Male
+<input type="radio" name="gender" value="other">Other
+<span class="error">* <?php echo $genderErr;?></span>
+<br><br>
+<input type="submit" name="submit" value="Submit">
+
+</form>
+```
+
+#### Date and Time
+
+The PHP date() function formats a timestamp to a more readable date and time.
+
+```php
+date(format,[timestamp])
+```
+
+The required format parameter of the date() function specifies how to format the date (or time).
+
+Here are some characters that are commonly used for dates:
+
+d - Represents the day of the month (01 to 31)
+m - Represents a month (01 to 12)
+Y - Represents a year (in four digits)
+l (lowercase 'L') - Represents the day of the week
+Other characters, like"/", ".", or "-" can also be inserted between the characters to add additional formatting.
+
+The example below formats today's date in three different ways:
+
+```php
+echo "Today is " . date("Y/m/d") . "<br>";
+echo "Today is " . date("Y.m.d") . "<br>";
+echo "Today is " . date("Y-m-d") . "<br>";
+echo "Today is " . date("l");
+```
+
+#### Get a Time
+
+Here are some characters that are commonly used for times:
+
+H - 24-hour format of an hour (00 to 23)
+h - 12-hour format of an hour with leading zeros (01 to 12)
+i - Minutes with leading zeros (00 to 59)
+s - Seconds with leading zeros (00 to 59)
+a - Lowercase Ante meridiem and Post meridiem (am or pm)
+The example below outputs the current time in the specified format:
+
+```php
+<?php
+echo "The time is " . date("h:i:sa");
+?>
+```
+
+#### Get Your Time Zone
+
+If the time you got back from the code is not correct, it's probably because your server is in another country or set up for a different timezone.
+
+So, if you need the time to be correct according to a specific location, you can set the timezone you want to use.
+
+The example below sets the timezone to "America/New_York", then outputs the current time in the specified format:
+
+```php
+<?php
+date_default_timezone_set("America/New_York");
+echo "The time is " . date("h:i:sa");
+?>
+```
+
+Create a Date With mktime()
+The optional timestamp parameter in the date() function specifies a timestamp. If omitted, the current date and time will be used (as in the examples above).
+
+The PHP mktime() function returns the Unix timestamp for a date. The Unix timestamp contains the number of seconds between the Unix Epoch (January 1 1970 00:00:00 GMT) and the time specified.
+
+```php
+mktime(hour, minute, second, month, day, year)
+```
+
+The example below creates a date and time with the date() function from a number of parameters in the mktime() function:
+
+```php
+<?php
+$d=mktime(11, 14, 54, 8, 12, 2014);
+echo "Created date is " . date("Y-m-d h:i:sa", $d);
+?>
+```
+
+#### Create a Date From a String With strtotime()
+
+The PHP strtotime() function is used to convert a human readable date string into a Unix timestamp (the number of seconds since January 1 1970 00:00:00 GMT).
+
+```php
+strtotime(time, now)
+```
+
+Example:
+
+```php
+<?php
+$d=strtotime("10:30pm April 15 2014");
+echo "Created date is " . date("Y-m-d h:i:sa", $d);
+?>
+```
+
+PHP is clever to convert the date string:
+
+```php
+<?php
+$d=strtotime("tomorrow");
+echo date("Y-m-d h:i:sa", $d) . "<br>";
+
+$d=strtotime("next Saturday");
+echo date("Y-m-d h:i:sa", $d) . "<br>";
+
+$d=strtotime("+3 Months");
+echo date("Y-m-d h:i:sa", $d) . "<br>";
+?>
+```
+
+#### Include in PHP
+
+The include (or require) statement takes all the text/code/markup that exists in the specified file and copies it into the file that uses the include statement.
+
+Including files is very useful when you want to include the same PHP, HTML, or text on multiple pages of a website.<br>
+Format:
+
+```php
+include 'filename';
+
+or
+
+require 'filename';
+```
+
+Here's an example:
+
+```php
+<?php
+echo "<p>Copyright &copy; 1999-" . date("Y") . " W3Schools.com</p>";
+?>
+```
+
+We assume the code above is in the file called footer.php
+
+```php
+<html>
+<body>
+
+<h1>Welcome to my home page!</h1>
+<p>Some text.</p>
+<p>Some more text.</p>
+<?php include 'footer.php';?>
+//Now we have included the code above into here
+</body>
+</html>
+```
+
+And we mentioned that expect Include we also have require to include the file into the page, but they have a big difference: When the include file is not found, use include, the script will continue to work, but when use the require, the script below will not work anymore.
+
+#### ReadFile(path)
+
+Use this file we could get all the content of the file in txt and at the end of the text file will display the total bytes of the file
+
+To open/read a file we can also use fopen() which has two parameters: one for the filename and another for options, here's all the options:
+
+<table>
+<th>Modes</th>
+<th>Description</th>
+<tr>
+<td>r</td>
+<td>Open a file for read only. File pointer starts at the beginning of the file</td>
+</tr>
+<tr>
+<td>r+</td>
+<td>Open a file for read/write. File pointer starts at the beginning of the file</td>
+</tr>
+<tr>
+<td>w</td>
+<td>Open a file for write only. Erases the contents of the file or creates a new file if it doesn't exist. File pointer starts at the beginning of the file</td>
+</tr>
+<tr>
+<td>w+</td>
+<td>Open a file for read/write. Erases the contents of the file or creates a new file if it doesn't exist. File pointer starts at the beginning of the file</td>
+</tr>
+<tr>
+<td>a</td>
+<td>Open a file for write only. The existing data in file is preserved. File pointer starts at the end of the file. Creates a new file if the file doesn't exist</td>
+</tr>
+<tr>
+<td>a+</td>
+<td>Open a file for read/write. The existing data in file is preserved. File pointer starts at the end of the file. Creates a new file if the file doesn't exist</td>
+</tr>
+<tr>
+<td>x</td>
+<td>Creates a new file for write only. Returns FALSE and an error if file already exists</td>
+</tr>
+<tr>
+<td>x+</td>
+<td>Creates a new file for read/write. Returns FALSE and an error if file already exists</td>
+</tr>
+</table>
+
+#### PHP Read File - fread()
+
+The fread() function reads from an open file.
+
+The first parameter of fread() contains the name of the file to read from and the second parameter specifies the maximum number of bytes to read.
+
+The following PHP code reads the "webdictionary.txt" file to the end:
+
+```php
+fread($myfile,filesize("webdictionary.txt"));
+```
+
+##### filesize(file):return size of the file
+
+After we manipulate the file, we shou use fclose(filename) to close the file to prevent it using the resources of the server.
+
+```php
+<?php
+$myfile = fopen("webdictionary.txt", "r");
+// some code to be executed....
+fclose($myfile);
+?>
+```
+
+#### fgets(file)
+
+This method is used to read the single line from the file, so in order to read the whole file we need use an another method called feof(file) that will check if the "end-of-file"(EOF) has been reached. And here's an example for that:
+
+```php
+<?php
+$myfile = fopen("webdictionary.txt", "r") or die("Unable to open file!");
+// Output one line until end-of-file
+while(!feof($myfile)) {
+  echo fgets($myfile) . "<br>";
+}
+fclose($myfile);
+?>
+```
+
+#### PHP Read Single Character - fgetc():
+
+With this function we could read a single character of the file;
+
+#### File create and write in PHP:
+
+When we are using fopen(), if there is no such file, it will be created. So we create a new file with the function fopen() too.
+But when we need to write this new file, we need to use method:
+fwrite(file,content).
+
+#### PHP Overwriting and Append
+
+When we finished writing a new file. If we start writing it again, besides the fopen()'s option is "w", the initial data will all be overwrited, we call it Overwriting. And when you choose the option
+"a", the initial data will be preserved.
+
+#### File Upload:
+
+Beacause the file upload is a little complicated, so we firstly showcase a example here:
+
+```php
+//index page
+<!DOCTYPE html>
+<html>
+<body>
+
+<form action="upload.php" method="post" enctype="multipart/form-data">
+  Select image to upload:
+  <input type="file" name="fileToUpload" id="fileToUpload">
+  <input type="submit" value="Upload Image" name="submit">
+</form>
+
+</body>
+</html>
+```
+
+```php
+//upload page
+<?php
+$target_dir = "uploads/";
+$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+//basename:eturns the filename from a path
+//$_FILES["filename",["name"]],get the file  uploaded by post, we could use filename to get the file like this,
+//we can also use type or size ect to get the file too, like when we use the type:$_FILES["filetype",["type"]]
+$uploadOk = 1;
+$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+// Check if image file is a actual image or fake image
+if(isset($_POST["submit"])) {
+//The isset function in PHP is used to determine whether a variable is set or not
+  $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+  if($check !== false) {
+    echo "File is an image - " . $check["mime"] . ".";
+    $uploadOk = 1;
+  } else {
+    echo "File is not an image.";
+    $uploadOk = 0;
+  }
+}
+
+// Check if file already exists
+if (file_exists($target_file)) {
+  echo "Sorry, file already exists.";
+  $uploadOk = 0;
+}
+
+// Check file size
+if ($_FILES["fileToUpload"]["size"] > 500000) {
+  echo "Sorry, your file is too large.";
+  $uploadOk = 0;
+}
+
+// Allow certain file formats
+if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+&& $imageFileType != "gif" ) {
+  echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+  $uploadOk = 0;
+}
+
+// Check if $uploadOk is set to 0 by an error
+if ($uploadOk == 0) {
+  echo "Sorry, your file was not uploaded.";
+// if everything is ok, try to upload file
+} else {
+  if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+    echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
+  } else {
+    echo "Sorry, there was an error uploading your file.";
+  }
+}
+?>
+
+```
