@@ -1677,3 +1677,1187 @@ if ($uploadOk == 0) {
 ?>
 
 ```
+
+## Create Cookies With PHP
+
+A cookie is often used to identify a user. A cookie is a small file that the server embeds on the user's computer. Each time the same computer requests a page with a browser, it will send the cookie too. With PHP, you can both create and retrieve cookie values.
+
+#### setcookie(name, value, expire, path("'/'means"), domain, secure, httponly):
+
+All the parameters above except for the name, the rest are optional.We could use the function isset() to find out if the cookie is set. Please note that set cookie should appear BEFORE the \<html> tag. And here's an example for cookie use:
+
+```php
+<!DOCTYPE html>
+<?php
+$cookie_name = "user";
+$cookie_value = "John Doe";
+setcookie($cookie_name, $cookie_value, time() + (86400 * 30), "/"); // 86400 = 1 day
+?>
+<html>
+<body>
+
+<?php
+if(!isset($_COOKIE[$cookie_name])) {
+     echo "Cookie named '" . $cookie_name . "' is not set!";
+} else {
+     echo "Cookie '" . $cookie_name . "' is set!<br>";
+     echo "Value is: " . $_COOKIE[$cookie_name];
+     $_COOKIE[$cookie_name] ="Rongxin";
+}
+?>
+
+<p><strong>Note:</strong> You might have to reload the page to see the value of the cookie.</p>
+
+</body>
+</html>
+```
+
+<strong>Note</strong>: The value of the cookie is automatically URLencoded when sending the cookie, and automatically decoded when received (to prevent URLencoding, use setrawcookie() instead).<br>
+To modify a cookie, just set (again) the cookie using the setcookie() function
+
+#### Delete a Cookie
+
+To delete a cookie, use the setcookie() function with an expiration date in the past:
+
+```php
+<?php
+// set the expiration date to one hour ago
+setcookie("user", "", time() - 3600);
+?>
+<html>
+<body>
+
+<?php
+echo "Cookie 'user' is deleted.";
+?>
+
+</body>
+</html>
+```
+
+#### Check if Cookies are Enabled
+
+The following example creates a small script that checks whether cookies are enabled. First, try to create a test cookie with the setcookie() function, then count the $\_COOKIE array variable:
+
+```php
+<?php
+setcookie("test_cookie", "test", time() + 3600, '/');
+?>
+<html>
+<body>
+
+<?php
+if(count($_COOKIE) > 0) {
+  echo "Cookies are enabled.";
+} else {
+  echo "Cookies are disabled.";
+}
+?>
+
+</body>
+</html>
+```
+
+#### Sesssions
+
+A session is a way to store information (in variables) to be used across multiple pages.
+
+Unlike a cookie, the information is not stored on the users computer.
+
+When you work with an application, you open it, do some changes, and then you close it. This is much like a Session. The computer knows who you are. It knows when you start the application and when you end. But on the internet there is one problem: the web server does not know who you are or what you do, because the HTTP address doesn't maintain state.
+
+Session variables solve this problem by storing user information to be used across multiple pages (e.g. username, favorite color, etc). By default, session variables last until the user closes the browser.
+
+So; Session variables hold information about one single user, and are available to all pages in one application.
+
+A session is started with the session_start() function.
+
+Session variables are set with the PHP global variable: $\_SESSION.
+
+Now, let's create a new page called "demo_session1.php". In this page, we start a new PHP session and set some session variables:
+
+<strong>Note</strong>: The session_start() function must be the very first thing in your document. Before any HTML tags.
+
+We could use the session_start() function to start a new session and session_unset() and session_destroy() functions to destroy the session, and here's an example for that:
+
+```php
+//page1
+<?php
+// Start the session
+session_start();
+?>
+<!DOCTYPE html>
+<html>
+<body>
+<?php
+// Set session variables
+$_SESSION["favcolor"] = "green";
+$_SESSION["favanimal"] = "cat";
+echo "Session variables are set.";
+?>
+</body>
+</html>
+
+//get the session variables
+//page 2
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html>
+<body>
+<?php
+// Echo session variables that were set on previous page
+echo "Favorite color is " . $_SESSION["favcolor"] . ".<br>";
+echo "Favorite animal is " . $_SESSION["favanimal"] . ".";
+?>
+</body>
+</html>
+
+//edit the session variables
+//page3
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html>
+<body>
+
+<?php
+// to change a session variable, just overwrite it
+$_SESSION["favcolor"] = "yellow";
+print_r($_SESSION);
+?>
+
+</body>
+</html>
+
+
+
+//destroy the session
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html>
+<body>
+
+<?php
+// remove all session variables
+session_unset();
+
+// destroy the session
+session_destroy();
+?>
+
+</body>
+</html>
+```
+
+#### PHP Filter
+
+PHP filter_var() Function
+The filter_var() function both validate and sanitize data.
+
+The filter_var() function filters a single variable with a specified filter. It takes two pieces of data:
+
+##### The variable you want to check<br>
+
+##### The type of check to use
+
+Here's an example:
+
+```php
+<?php
+$ip = "127.0.0.1";
+
+if (!filter_var($ip, FILTER_VALIDATE_IP) === false) {
+  echo("$ip is a valid IP address");
+} else {
+  echo("$ip is not a valid IP address");
+}
+?>
+//Of course, you could validate like integer, and string etc...
+```
+
+#### PHP callback
+
+In php, we could use a callback like this by name:
+
+```php
+<?php
+function my_callback($item) {
+  return strlen($item);
+}
+
+$strings = ["apple", "orange", "banana", "coconut"];
+$lengths = array_map("my_callback", $strings);
+print_r($lengths);
+?>
+```
+
+or we could use the annoymous function like javascript:
+
+```php
+//example1:
+<?php
+$strings = ["apple", "orange", "banana", "coconut"];
+$lengths = array_map( function($item) { return strlen($item); } , $strings);
+print_r($lengths);
+?>
+//example2:
+<?php
+function exclaim($str) {
+  return $str . "! ";
+}
+
+function ask($str) {
+  return $str . "? ";
+}
+
+function printFormatted($str, $format) {
+  // Calling the $format callback function
+  echo $format($str);
+}
+
+// Pass "exclaim" and "ask" as callback functions to printFormatted()
+printFormatted("Hello world", "exclaim");
+printFormatted("Hello world", "ask");
+?>
+```
+
+## What is JSON?
+
+JSON stands for JavaScript Object Notation, and is a syntax for storing and exchanging data.
+
+Since the JSON format is a text-based format, it can easily be sent to and from a server, and used as a data format by any programming language.
+
+#### PHP and JSON
+
+PHP has some built-in functions to handle JSON.
+
+First, we will look at the following two functions:
+
+json_encode()
+json_decode()
+
+#### PHP - json_encode():
+
+The json_encode() function is used to encode a value to JSON format.
+
+```php
+<?php
+$age = array("Peter"=>35, "Ben"=>37, "Joe"=>43);
+
+echo json_encode($age);
+?>
+```
+
+#### PHP - json_decode():
+
+The json_decode() function is used to decode a JSON object into a PHP object or an associative array:
+
+```php
+<?php
+$jsonobj = '{"Peter":35,"Ben":37,"Joe":43}';
+
+var_dump(json_decode($jsonobj));
+?>
+```
+
+Both json_decode() and json_encode has two arguments, and the second argument is default set as false, then we will get a object, when it's set to true, we will get a array
+
+#### Exception
+
+PHP has the exception system like javascript, the throw statement allows a user defined function or method to throw an exception. When an exception is thrown, the code following it will not be executed.
+
+If an exception is not caught, a fatal error will occur with an "Uncaught Exception" message.
+
+Lets try to throw an exception without catching it:
+
+```php
+<?php
+function divide($dividend, $divisor) {
+  if($divisor == 0) {
+    throw new Exception("Division by zero");
+  }
+  return $dividend / $divisor;
+}
+
+echo divide(5, 0);
+?>
+```
+
+To avoid the error from the example above, we can use the try...catch statement to catch exceptions and continue the process.
+
+```php
+<?php
+function divide($dividend, $divisor) {
+  if($divisor == 0) {
+    throw new Exception("Division by zero");
+  }
+  return $dividend / $divisor;
+}
+
+try {
+  echo divide(5, 0);
+} catch(Exception $e) {
+  echo "Unable to divide.";
+}
+?>
+```
+
+And also we could use try...catch...finally Statement:
+
+```php
+<?php
+function divide($dividend, $divisor) {
+  if($divisor == 0) {
+    throw new Exception("Division by zero");
+  }
+  return $dividend / $divisor;
+}
+
+try {
+  echo divide(5, 0);
+} catch(Exception $e) {
+  echo "Unable to divide. ";
+} finally {
+  echo "Process complete.";
+}
+?>
+```
+
+And we could create an exception object like Java:
+
+```
+new Exception(message, code, previous)
+```
+
+<h3>Parameter Values</h3>
+<table class="ws-table-all notranslate">
+  <tbody><tr>
+    <th style="width:20%">Parameter</th>
+    <th style="width:80%">Description</th>
+  </tr>
+  <tr>
+    <td>message</td>
+    <td>Optional. A string describing why the exception was thrown</td>
+  </tr>
+  <tr>
+    <td>code</td>
+    <td>Optional. An integer that can be used used to easily distinguish this exception from others of the same type</td>
+  </tr>
+  <tr>
+    <td>previous</td>
+    <td>Optional. If this exception was thrown in a catch block of another exception, it is recommended to pass that exception into this parameter</td>
+  </tr>
+</tbody></table>
+
+<h3>Methods</h3>
+<p>When catching an exception, the following table shows some of the methods that can be used to
+get information about the exception:</p>
+<table class="ws-table-all notranslate">
+  <tbody><tr>
+    <th style="width:20%">Method</th>
+    <th style="width:80%">Description</th>
+  </tr>
+  <tr>
+    <td>getMessage()</td>
+    <td>Returns a string describing why the exception was thrown</td>
+  </tr>
+  <tr>
+    <td>getPrevious()</td>
+    <td>If this exception was triggered by another one, this method returns the previous exception. If not, then it returns <em>null</em></td>
+  </tr>
+  <tr>
+    <td>getCode()</td>
+    <td>Returns the exception code</td>
+  </tr>
+  <tr>
+    <td>getFile()</td>
+    <td>Returns the full path of the file in which the exception was thrown</td>
+  </tr>
+  <tr>
+    <td>getLine()</td>
+    <td>Returns the line number of the line of code which threw the exception</td>
+  </tr>
+</tbody></table>
+Here's an example:
+
+```php
+<?php
+function divide($dividend, $divisor) {
+  if($divisor == 0) {
+    throw new Exception("Division by zero", 1);
+  }
+  return $dividend / $divisor;
+}
+
+try {
+echo divide(5, 0);
+} catch(Exception $ex) {
+$code = $ex->getCode();
+$message = $ex->getMessage();
+$file = $ex->getFile();
+$line = $ex->getLine();
+echo "Exception thrown in $file on line $line: [Code $code]
+$message";
+}
+?>
+```
+
+## PHP What is OOP?
+
+OOP stands for Object-Oriented Programming.
+
+Procedural programming is about writing procedures or functions that perform operations on the data, while object-oriented programming is about creating objects that contain both data and functions.
+
+Object-oriented programming has several advantages over procedural programming:
+
+OOP is faster and easier to execute
+OOP provides a clear structure for the programs
+OOP helps to keep the PHP code DRY "Don't Repeat Yourself", and makes the code easier to maintain, modify and debug
+OOP makes it possible to create full reusable applications with less code and shorter development time
+Tip: The "Don't Repeat Yourself" (DRY) principle is about reducing the repetition of code. You should extract out the codes that are common for the application, and place them at a single place and reuse them instead of repeating it.
+
+#### PHP OOP - Classes and Objects
+
+A class is a template for objects, and an object is an instance of class.
+
+Example:
+
+```php
+<?php
+class Fruit {
+  // Properties
+  public $name;
+  public $color;
+
+  // Methods
+  function set_name($name) {
+    $this->name = $name;
+  }
+  function get_name() {
+    return $this->name;
+  }
+}
+?>
+```
+
+And we use "new" keyword to define an object:
+
+```php
+<?php
+$apple = new Fruit();
+$banana = new Fruit();
+$apple->set_name('Apple');
+$banana->set_name('Banana');
+//get the properties
+echo $apple->get_name();
+echo "<br>";
+echo $banana->get_name();
+?>
+```
+
+The $this keyword refers to the current object, and is only available inside methods.
+
+Look at the following example:
+
+```php
+<?php
+class Fruit {
+  public $name;
+  function set_name($name) {
+    $this->name = $name;
+  }
+}
+$apple = new Fruit();
+$apple->set_name("Apple");
+echo $apple->name;
+?>
+```
+
+You can use the instanceof keyword to check if an object belongs to a specific class:
+
+```php
+<?php
+$apple = new Fruit();
+var_dump($apple instanceof Fruit);
+?>
+```
+
+#### PHP - The \_\_construct Function
+
+A constructor allows you to initialize an object's properties upon creation of the object.
+
+If you create a \_\_construct() function, PHP will automatically call this function when you create an object from a class.
+
+<strong>Notice that the construct function starts with two underscores (\_\_)!</strong>
+
+We see in the example below, that using a constructor saves us from calling the set_name() method which reduces the amount of code:
+
+```php
+<?php
+class Fruit {
+  public $name;
+  public $color;
+
+  function __construct($name) {
+    $this->name = $name;
+  }
+  function get_name() {
+    return $this->name;
+  }
+}
+
+$apple = new Fruit("Apple");
+echo $apple->get_name();
+?>
+```
+
+In php, we do not only get the constructor, we still have a destructor function which will be called as soon as a object is destructed or script is stopped or exit.If you create a \_\_destruct() function, PHP will automatically call this function at the end of the script.
+
+<strong>Notice that the destruct function starts with two underscores (\_\_)!</strong>
+
+Example:
+
+```php
+<?php
+class Fruit {
+  public $name;
+  public $color;
+
+  function __construct($name) {
+    $this->name = $name;
+  }
+  function __destruct() {
+    echo "The fruit is {$this->name}.";
+  }
+}
+
+$apple = new Fruit("Apple");
+?>
+```
+
+<strong>But here's one difference to Java: in java we could use method overriding to create so many differnt constructor with different arguments, but in php we could only create only one constructor and also the destructor.
+</strong>
+
+#### Access Modifiers
+
+In php, we got three different access modifiers:public, private, and protected. The public is the default access modifier, and when we create an object, we could not access the properties with modifier private and protected.
+
+### Inheritance
+
+Inheritance in OOP = When a class derives from another class.
+
+The child class will inherit all the<strong> public and protected properties</strong> and methods from the parent class. In addition, it can have its own properties and methods.
+
+An inherited class is defined by using the extends keyword.
+
+Let's look at an example:
+
+```php
+<?php
+class Fruit {
+  public $name;
+  public $color;
+  public function __construct($name, $color) {
+    $this->name = $name;
+    $this->color = $color;
+  }
+  public function intro() {
+    echo "The fruit is {$this->name} and the color is {$this->color}.";
+  }
+}
+
+// Strawberry is inherited from Fruit
+class Strawberry extends Fruit {
+  public function message() {
+    echo "Am I a fruit or a berry? ";
+  }
+}
+$strawberry = new Strawberry("Strawberry", "red");
+$strawberry->message();
+$strawberry->intro();
+```
+
+So as we said the protected properties or methods can be accessed within the class and by classes derived from that class. What does that mean?
+
+Let's look at an example:
+
+```php
+<?php
+class Fruit {
+  public $name;
+  public $color;
+  public function __construct($name, $color) {
+    $this->name = $name;
+    $this->color = $color;
+  }
+  protected function intro() {
+    echo "The fruit is {$this->name} and the color is {$this->color}.";
+  }
+}
+
+class Strawberry extends Fruit {
+  public function message() {
+    echo "Am I a fruit or a berry? ";
+  }
+}
+
+// Try to call all three methods from outside class
+$strawberry = new Strawberry("Strawberry", "red");  // OK. __construct() is public
+$strawberry->message(); // OK. message() is public
+$strawberry->intro(); // ERROR. intro() is protected
+?>
+```
+
+And when we call it inside the class:
+
+```php
+<?php
+class Fruit {
+  public $name;
+  public $color;
+  public function __construct($name, $color) {
+    $this->name = $name;
+    $this->color = $color;
+  }
+  protected function intro() {
+    echo "The fruit is {$this->name} and the color is {$this->color}.";
+  }
+}
+
+class Strawberry extends Fruit {
+  public function message() {
+    echo "Am I a fruit or a berry? ";
+    // Call protected method from within derived class - OK
+    $this -> intro();
+  }
+}
+
+$strawberry = new Strawberry("Strawberry", "red"); // OK. __construct() is public
+$strawberry->message(); // OK. message() is public and it calls intro() (which is protected) from within the derived class
+?>
+```
+
+Inherited methods can be overridden by redefining the methods (use the same name) in the child class.
+
+Look at the example below. The **construct() and intro() methods in the child class (Strawberry) will override the **construct() and intro() methods in the parent class (Fruit):
+
+```php
+<?php
+class Fruit {
+  public $name;
+  public $color;
+  public function __construct($name, $color) {
+    $this->name = $name;
+    $this->color = $color;
+  }
+  public function intro() {
+    echo "The fruit is {$this->name} and the color is {$this->color}.";
+  }
+}
+
+class Strawberry extends Fruit {
+  public $weight;
+  public function __construct($name, $color, $weight) {
+    $this->name = $name;
+    $this->color = $color;
+    $this->weight = $weight;
+  }
+  public function intro() {
+    echo "The fruit is {$this->name}, the color is {$this->color}, and the weight is {$this->weight} gram.";
+  }
+}
+
+$strawberry = new Strawberry("Strawberry", "red", 50);
+$strawberry->intro();
+?>
+```
+
+#### PHP - The final Keyword
+
+The final keyword can be used to prevent class inheritance or to prevent method overriding.
+
+The following example shows how to prevent class inheritance:
+
+```php
+<?php
+final class Fruit {
+  // some code
+}
+
+// will result in error
+class Strawberry extends Fruit {
+  // some code
+}
+?>
+```
+
+#### PHP - Class Constants
+
+Constants cannot be changed once it is declared.
+
+Class constants can be useful if you need to define some constant data within a class.
+
+A class constant is declared inside a class with the const keyword.
+
+Class constants are case-sensitive. However, it is recommended to name the constants in all uppercase letters.
+
+We can access a constant from outside the class by using the class name followed by the scope resolution operator (::) followed by the constant name, like here:
+
+```php
+<?php
+class Goodbye {
+  const LEAVING_MESSAGE = "Thank you for visiting W3Schools.com!";
+}
+
+echo Goodbye::LEAVING_MESSAGE;
+?>
+```
+
+Or we could use self keyword to invoke the scope resolution operator:
+
+```php
+<?php
+class Goodbye {
+  const LEAVING_MESSAGE = "Thank you for visiting W3Schools.com!";
+  public function byebye() {
+    echo self::LEAVING_MESSAGE;
+  }
+}
+
+$goodbye = new Goodbye();
+$goodbye->byebye();
+?>
+```
+
+#### Abstract Classes
+
+Abstract classes and methods are when the parent class has a named method, but need its child class(es) to fill out the tasks.
+
+An abstract class is a class that contains at least one abstract method. An abstract method is a method that is declared, but not implemented in the code.
+
+An abstract class or method is defined with the abstract keyword.
+
+And when inheriting from an abstract class, the child class method must be defined with the same name, and the same or a less restricted access modifier. So, if the abstract method is defined as protected, the child class method must be defined as either protected or public, but not private. Also, the type and number of required arguments must be the same. However, the child classes may have optional arguments in addition.
+
+So, when a child class is inherited from an abstract class, we have the following rules:
+
+<li>The child class method must be defined with the same name and it redeclares the parent abstract method
+<li>The child class method must be defined with the same or a less restricted access modifier
+<li>The number of required arguments must be the same. However, the child class may have optional arguments in addition<br>
+Let's look at an example:
+
+```php
+<?php
+// Parent class
+abstract class Car {
+  public $name;
+  public function __construct($name) {
+    $this->name = $name;
+  }
+  abstract public function intro() : string;
+}
+
+// Child classes
+class Audi extends Car {
+  public function intro() : string {
+    return "Choose German quality! I'm an $this->name!";
+  }
+}
+
+class Volvo extends Car {
+  public function intro() : string {
+    return "Proud to be Swedish! I'm a $this->name!";
+  }
+}
+
+class Citroen extends Car {
+  public function intro() : string {
+    return "French extravagance! I'm a $this->name!";
+  }
+}
+
+// Create objects from the child classes
+$audi = new audi("Audi");
+echo $audi->intro();
+echo "<br>";
+
+$volvo = new volvo("Volvo");
+echo $volvo->intro();
+echo "<br>";
+
+$citroen = new citroen("Citroen");
+echo $citroen->intro();
+?>
+```
+
+As we see in the above example, there has one statement:
+
+```php
+abstract public function intro() : string;
+```
+
+And all the methods below will also add :" : string", so what does it do? In fact, it's a limition for return type, with ":string", our return type can only be a string
+
+#### Interfaces
+
+Interfaces allow you to specify what methods a class should implement.
+
+Interfaces make it easy to use a variety of different classes in the same way. When one or more classes use the same interface, it is referred to as "polymorphism".
+
+Interfaces are declared with the interface keyword:
+
+```php
+<?php
+// Interface definition
+interface Animal {
+  public function makeSound();
+}
+
+// Class definitions
+class Cat implements Animal {
+  public function makeSound() {
+    echo " Meow ";
+  }
+}
+
+class Dog implements Animal {
+  public function makeSound() {
+    echo " Bark ";
+  }
+}
+
+class Mouse implements Animal {
+  public function makeSound() {
+    echo " Squeak ";
+  }
+}
+
+// Create a list of animals
+$cat = new Cat();
+$dog = new Dog();
+$mouse = new Mouse();
+$animals = array($cat, $dog, $mouse);
+
+// Tell the animals to make a sound
+foreach($animals as $animal) {
+  $animal->makeSound();
+}
+?>
+```
+
+So what;s the differences between the abstract class and the interface:
+
+<li>Interfaces cannot have properties, while abstract classes can
+<li>All interface methods must be public, while abstract class methods is public or protected
+<li>All methods in an interface are abstract, so they cannot be implemented in code and the abstract keyword is not necessary
+<li>Classes can implement an interface while inheriting from another class at the same time
+<li>A class can implement so many different interfaces with comas, but can noly extends one abstract class.
+As we learned, php is noly supporting the single inheritance.
+So, what if a class needs to inherit multiple behaviors? OOP traits solve this problem.
+
+Traits are used to declare methods that can be used in multiple classes. Traits can have methods and abstract methods that can be used in multiple classes, and the methods can have any access modifier (public, private, or protected).
+
+Traits are declared with the trait keyword:
+
+```php
+<?php
+trait message1 {
+public function msg1() {
+    echo "OOP is fun! ";
+  }
+}
+
+class Welcome {
+  use message1;
+}
+
+$obj = new Welcome();
+$obj->msg1();
+?>
+```
+
+<strong>Note:We could not set variable in trait, but we could pass the arguments into the method</strong>
+
+#### Static Methods
+
+Static methods can be called directly - without creating an instance of the class first.
+
+Static methods are declared with the static keyword:
+
+```php
+<?php
+class ClassName {
+  public static function staticMethod() {
+    echo "Hello World!";
+  }
+}
+ClassName::staticMethod();
+?>
+```
+
+#### More on Static Methods
+
+A class can have both static and non-static methods. A static method can be accessed from a method in the same class using the self keyword and double colon (::):
+
+```php
+<?php
+class greeting {
+  public static function welcome() {
+    echo "Hello World!";
+  }
+
+  public function __construct() {
+    self::welcome();
+  }
+}
+
+new greeting();
+?>
+```
+
+Static methods can also be called from methods in other classes. To do this, the static method should be public:
+
+```php
+<?php
+class greeting {
+  public static function welcome() {
+    echo "Hello World!";
+  }
+}
+
+class SomeOtherClass {
+  public function message() {
+    greeting::welcome();
+  }
+}
+?>
+```
+
+To call a static method from a child class, use the parent keyword inside the child class. Here, the static method can be public or protected:
+
+```php
+<?php
+class domain {
+  protected static function getWebsiteName() {
+    return "W3Schools.com";
+  }
+}
+
+class domainW3 extends domain {
+  public $websiteName;
+  public function __construct() {
+    $this->websiteName = parent::getWebsiteName();
+  }
+}
+
+$domainW3 = new domainW3;
+echo $domainW3 -> websiteName;
+?>
+```
+
+#### Static Properties
+
+Static properties can be called directly - without creating an instance of a class.
+
+Static properties are declared with the static keyword:
+
+To access a static property use the class name, double colon (::), and the property name:
+
+```php
+<?php
+class pi {
+  public static $value = 3.14159;
+}
+
+// Get static property
+echo pi::$value;
+?>
+```
+
+And also like the static method above, we could use self::$value to invoke the property in itself, and parent::$value to invoke the property in child classes
+
+#### PHP Namespaces
+
+Namespaces are qualifiers that solve two different problems:
+
+<li>They allow for better organization by grouping classes that work together to perform a task
+<li>They allow the same name to be used for more than one class
+
+For example, you may have a set of classes which describe an HTML table, such as Table, Row and Cell while also having another set of classes to describe furniture, such as Table, Chair and Bed. Namespaces can be used to organize the classes into two different groups while also preventing the two classes Table and Table from being mixed up.
+
+Namespaces are declared at the beginning of a file using the namespace keyword:
+
+```php
+namespace Html;
+```
+
+<strong>Note: A namespace declaration must be the first thing in the PHP file. The following code would be invalid:</strong>
+
+```php
+<?php
+//namespace Html;:correct namespace
+echo "Hello World!";
+namespace Html;//Wrong
+...
+?>
+```
+
+Constants, classes and functions declared in this file will belong to the Html namespace:
+
+Example:
+
+```php
+<?php
+namespace Html;
+class Table {
+  public $title = "";
+  public $numRows = 0;
+  public function message() {
+    echo "<p>Table '{$this->title}' has {$this->numRows} rows.</p>";
+  }
+}
+$table = new Table();
+$table->title = "My table";
+$table->numRows = 5;
+?>
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<?php
+$table->message();
+?>
+
+</body>
+</html>
+```
+
+We can invoke the the class with namespace like this:
+
+```php
+namespace Code\Html;
+```
+
+To invoke the class above:
+
+```php
+$table = new Html\Table()
+```
+
+Or if you want invoke two objects with same namespace, you could do like this:
+
+```php
+namespace Html;
+$table = new Table();
+$row = new Row();
+```
+
+For easier access we could give the namespace a alias:
+
+```php
+use Html as H;
+$table = new H\Table();
+```
+
+#### PHP Iterables
+
+An iterable is any value which can be looped through with a foreach() loop.
+
+The iterable pseudo-type was introduced in PHP 7.1, and it can be used as a data type for function arguments and function return values.Use this pseudo-type as the return type of a function, this function has to return a iterable type of data.
+
+```php
+<?php
+function getIterable():iterable {
+  return ["a", "b", "c"];
+  //return "a,b,c";->Fatal error
+}
+
+$myIterable = getIterable();
+foreach($myIterable as $item) {
+  echo $item;
+}
+```
+
+#### Creating Iterables
+
+Arrays
+
+All arrays are iterables, so any array can be used as an argument of a function that requires an iterable.
+
+Iterators
+
+Any object that implements the Iterator interface can be used as an argument of a function that requires an iterable.
+
+An iterator contains a list of items and provides methods to loop through them. It keeps a pointer to one of the elements in the list. Each item in the list should have a key which can be used to find the item.
+
+An iterator must have these methods:
+
+<li>current() - Returns the element that the pointer is currently pointing to. It can be any data type
+key() Returns the key associated with the current element in the list. It can only be an integer, float, boolean or string
+<li>next()- Moves the pointer to the next element in the list
+<li>rewind()- Moves the pointer to the first element in the list
+<li>valid()- If the internal pointer is not pointing to any element (for example, if next() was called at the end of the list), this should return false. It returns true in any other case
+
+```php
+<?php
+// Create an Iterator
+class MyIterator implements Iterator {
+  private $items = [];
+  private $pointer = 0;
+
+  public function __construct($items) {
+    // array_values() makes sure that the keys are numbers
+    $this->items = array_values($items);
+  }
+
+  public function current() {
+    return $this->items[$this->pointer];
+  }
+
+  public function key() {
+    return $this->pointer;
+  }
+
+  public function next() {
+    $this->pointer++;
+  }
+
+  public function rewind() {
+    $this->pointer = 0;
+  }
+
+  public function valid() {
+    // count() indicates how many items are in the list
+    return $this->pointer < count($this->items);
+  }
+}
+
+// A function that uses iterables
+function printIterable(iterable $myIterable) {
+  foreach($myIterable as $item) {
+    echo $item;
+  }
+}
+
+// Use the iterator as an iterable
+$iterator = new MyIterator(["a", "b", "c"]);
+printIterable($iterator);
+?>
+```
+
+## PHP MySQL Database
+
+The data in a MySQL database are stored in tables. A table is a collection of related data, and it consists of columns and rows.
+
+Databases are useful for storing information categorically. A company may have a database with the following tables:
+
+<li>Employees
+<li>Products
+<li>Customers
+<li>Orders
