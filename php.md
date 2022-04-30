@@ -4366,3 +4366,321 @@ The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)
 ```php
 $sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 ```
+
+#### PHP XML Parsers
+
+The XML language is a way to structure data for sharing across websites.
+
+Several web technologies like RSS Feeds and Podcasts are written in XML.
+
+XML is easy to create. It looks a lot like HTML, except that you make up your own tags.
+
+If you want to learn more about XML, please visit our XML tutorial.
+
+#### XML Parser:
+
+To read and update, create and manipulate an XML document, you will need an XML parser.
+
+In PHP there are two major types of XML parsers:
+
+<li>Tree-Based Parsers
+<li>Event-Based Parsers
+
+#### Tree-Based Parsers:
+
+Tree-based parsers holds the entire document in Memory and transforms the XML document into a Tree structure. It analyzes the whole document, and provides access to the Tree elements (DOM).
+
+This type of parser is a better option for smaller XML documents, but not for large XML document as it causes major performance issues.
+
+Example of tree-based parsers:
+
+<li>SimpleXML
+<li>DOM
+
+#### Event-Based Parsers:
+
+Event-based parsers do not hold the entire document in Memory, instead, they read in one node at a time and allow you to interact with in real time. Once you move onto the next node, the old one is thrown away.
+
+This type of parser is well suited for large XML documents. It parses faster and consumes less memory.
+
+Example of event-based parsers:
+
+<li>XMLReader
+<li>XML Expat Parser
+
+#### The SimpleXML Parser:
+
+SimpleXML is a <strong>tree-based parser</strong>.
+
+SimpleXML provides an easy way of getting an element's name, attributes and textual content if you know the XML document's structure or layout.
+
+SimpleXML turns an XML document into a data structure you can iterate through like a collection of arrays and objects.
+
+Compared to DOM or the Expat parser, SimpleXML takes a fewer lines of code to read text data from an element.
+
+The PHP<strong> simplexml_load_string()</strong> function is used to read XML data from a string.
+
+Assume we have a variable that contains XML data, like this:
+
+Example:
+
+```php
+$myXMLData =
+"<?xml version='1.0' encoding='UTF-8'?>
+<note>
+<to>Tove</to>
+<from>Jani</from>
+<heading>Reminder</heading>
+<body>Don't forget me this weekend!</body>
+</note>";
+
+//Invoke
+<?php
+$myXMLData =
+"<?xml version='1.0' encoding='UTF-8'?>
+<note>
+<to>Tove</to>
+<from>Jani</from>
+<heading>Reminder</heading>
+<body>Don't forget me this weekend!</body>
+</note>";
+
+$xml=simplexml_load_string($myXMLData) or die("Error: Cannot create object");
+print_r($xml);
+?>
+//Then you get an associtive array like this:
+```
+
+```
+SimpleXMLElement Object ( [to] => Tove [from] => Jani [heading] => Reminder [body] => Don't forget me this weekend! )
+```
+
+Also you could invoke a xml file directly with the method <strong>simplexml_load_file()</strong>:
+
+```xml
+<!-- Declare -->
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>
+```
+
+```php
+//Invoke
+<?php
+$xml=simplexml_load_file("note.xml") or die("Error: Cannot create object");
+print_r($xml);
+?>
+```
+
+So now we get a XML object, we could get the values from it:
+
+```php
+<?php
+$xml=simplexml_load_file("note.xml") or die("Error: Cannot create object");
+echo $xml->to . "<br>";
+echo $xml->from . "<br>";
+echo $xml->heading . "<br>";
+echo $xml->body;
+?>
+```
+
+And if we hace more than one object in xml, like this:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<bookstore>
+  <book category="COOKING">
+    <title lang="en">Everyday Italian</title>
+    <author>Giada De Laurentiis</author>
+    <year>2005</year>
+    <price>30.00</price>
+  </book>
+  <book category="CHILDREN">
+    <title lang="en">Harry Potter</title>
+    <author>J K. Rowling</author>
+    <year>2005</year>
+    <price>29.99</price>
+  </book>
+  <book category="WEB">
+    <title lang="en-us">XQuery Kick Start</title>
+    <author>James McGovern</author>
+    <year>2003</year>
+    <price>49.99</price>
+  </book>
+  <book category="WEB">
+    <title lang="en-us">Learning XML</title>
+    <author>Erik T. Ray</author>
+    <year>2003</year>
+    <price>39.95</price>
+  </book>
+</bookstore>
+```
+
+We could Get Node Values of Specific Elements like this:
+
+```php
+<?php
+$xml=simplexml_load_file("books.xml") or die("Error: Cannot create object");
+echo $xml->book[0]->title . "<br>";
+echo $xml->book[1]->title;
+?>
+```
+
+And xml can be considered as an array, so we could loop it with arrays' way:
+
+```php
+<?php
+$xml=simplexml_load_file("books.xml") or die("Error: Cannot create object");
+foreach($xml->children() as $books) {
+  echo $books->title . ", ";
+  echo $books->author . ", ";
+  echo $books->year . ", ";
+  echo $books->price . "<br>";
+}
+?>
+```
+
+Then we will get :
+
+```
+Everyday Italian, Giada De Laurentiis, 2005, 30.00
+Harry Potter, J K. Rowling, 2005, 29.99
+XQuery Kick Start, James McGovern, 2003, 49.99
+Learning XML, Erik T. Ray, 2003, 39.95
+```
+
+Besides, we could also get the attributes from the each object, like the example above, we found each book has an property:"category", and we could use:
+
+```php
+ $xml->book[0]['category'];
+```
+
+And in every book, they all get a title and in the title they get a "lang" property, so we could get them in this way:
+
+```php
+$xml->book[1]->title['lang'];
+```
+
+#### XML Expat Parser
+
+```php
+<?php
+// Initialize the XML parser
+$parser=xml_parser_create();
+
+// Function to use at the start of an element,this start function must have three arguments: $parser->A variable containing the XML parser calling the handler. $name->A variable containing the name of the elements, that triggers this function, from the XML file as a string.$data->An array containing the elements attributes from the XML file as a string
+function start($parser,$element_name,$element_attrs) {
+  switch($element_name) {
+    case "NOTE":
+    echo "-- Note --<br>";
+    break;
+    case "TO":
+    echo "To: ";
+    break;
+    case "FROM":
+    echo "From: ";
+    break;
+    case "HEADING":
+    echo "Heading: ";
+    break;
+    case "BODY":
+    echo "Message: ";
+  }
+}
+
+// Function to use at the end of an element,this method should have these two arguments:$parser->A variable containing the XML parser calling the handler.$name-> A variable containing the name of the elements, that triggers this function, from the XML file as a string
+function stop($parser,$element_name) {
+  echo "<br>";
+}
+
+// Function to use when finding character data
+function char($parser,$data) {
+  echo $data;
+}
+
+// Specify element handler
+xml_set_element_handler($parser,"start","stop");
+
+// Specify data handler
+xml_set_character_data_handler($parser,"char");
+
+// Open XML file
+$fp=fopen("note.xml","r");
+
+// Read data,fread() reads up to length bytes from the file pointer referenced by stream. Reading stops as soon as one of the following conditions is met:1.length bytes have been read,2.EOF (end of file) is reached,3.a packet becomes available or the socket timeout occurs (for network streams),4.if the stream is read buffered and it does not represent a plain file, at most one read of up to a number of bytes equal to the chunk size (usually 8192) is made; depending on the previously buffered data, the size of the returned data may be larger than the chunk size.
+while ($data=fread($fp,4096)) {
+  //feof — Tests for end-of-file on a file pointer
+  xml_parse($parser,$data,feof($fp)) or
+  die (sprintf("XML Error: %s at line %d",
+  xml_error_string(xml_get_error_code($parser)),
+  xml_get_current_line_number($parser)));
+}
+
+// Free the XML parser
+xml_parser_free($parser);
+?>
+
+```
+
+Lastly, we got this conclusion:The Expat parser is an event-based parser, it's all operated on methods.In fact, we could use PHP XML DOM Parser also which is a tree-based parse. And there are three levels of parser:Level 1: XML Document,Level 2: Root element: \<from>,Level 3: Text element: "Jani".Here's an example:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+<to>Tove</to>
+<from>Jani</from>
+<heading>Reminder</heading>
+<body>Don't forget me this weekend!</body>
+</note>
+```
+
+```php
+<?php
+$xmlDoc = new DOMDocument();
+$xmlDoc->load("note.xml");
+
+print $xmlDoc->saveXML();
+?>
+```
+
+And you will get this:
+
+```
+Tove Jani Reminder Don't forget me this weekend!
+```
+
+If you want get the result like Expat, we could do like this:
+
+```php
+<?php
+$xmlDoc = new DOMDocument();
+$xmlDoc->load("note.xml");
+
+$x = $xmlDoc->documentElement;
+foreach ($x->childNodes AS $item) {
+  print $item->nodeName . " = " . $item->nodeValue . "<br>";
+}
+?>
+```
+
+Result:
+
+```php
+#text =
+to = Tove
+#text =
+from = Jani
+#text =
+heading = Reminder
+#text =
+body = Don't forget me this weekend!
+#text =
+```
+
+And we found: in the example above you see that there are empty text nodes between each element.When XML generates, it often contains white-spaces between the nodes. The XML DOM parser treats these as ordinary elements, and if you are not aware of them, they sometimes cause problems.
+
+
