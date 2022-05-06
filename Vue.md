@@ -351,7 +351,7 @@ Alough it's a sort of difficult, but it still shows us the secret behind the rea
 The template is the html code in the component, we could set them in the html file, also we could set them in the javascript file with the form:
 
 ```javascript
-template` html code `;
+template:` html code `,
 ```
 
 Example:
@@ -371,13 +371,13 @@ html...
 
 ```javascript
 ...Vuecode
-template
+template:
 `<div class="demo"
 :style="{borderColor:boxAselected?'red':'#ccc'
 }"
   @click="boxSelected('A')"
 ></div>
-`
+`,
 data(){
   return{
     boxASelected:false
@@ -392,3 +392,158 @@ methods:{
 }
 ...
 ```
+
+#### <strong>Note:The use of ref->Like the key , ref is an attribute only understand by Vue, it can be hold by any element in the component, when we set an "ref='name'" to this element, we could use "this.$refs.name" to invoke this element directly</strong>
+
+#### Vue Components
+
+When we use create an app, this app will control an html component, and then we we could use this app to generate the same smaller components in the main component with "v-for". But here's an problem: When we use the same module to create the same smaller components, teh would share the same event listeners too, so there would cause so bugs:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue Basics</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/vue@next" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>FriendList</h1>
+    </header>
+    <section id="app">
+      <ul>
+        <li v-for="friend in friends" key="id">
+          <h2>{{friend.name}}</h2>
+          <button @click="toggleDetails">
+            {{visibility?"Hide" : "Show"}} Details
+          </button>
+          <ul v-if="visibility">
+            <li><strong>Phone:</strong>{{friend.phone}}</li>
+            <li><strong>Email:</strong> {{friend.email}}</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </body>
+  <script src="https://unpkg.com/vue@3"></script>
+  <script src="app.js"></script>
+</html>
+```
+
+```javascript
+const app = Vue.createApp({
+  data() {
+    return {
+      visibility: false,
+      friends: [
+        {
+          id: 'manuel',
+          name: 'Manuel Lorenz',
+          phone: '01234 5678 991',
+          email: 'manuel@gmail.com',
+        },
+        {
+          id: 'julie',
+          name: 'Julie Jones',
+          phone: '09876 543 221',
+          email: 'julie@gmail.com',
+        },
+      ],
+    };
+  },
+  methods: {
+    toggleDetails() {
+      this.visibility = !this.visibility;
+    },
+  },
+});
+app.mount('#app');
+```
+
+Because the buttons are all bind the same event listener, they will all do the same thing when any button is clicked. In order to solve this problem, we could use the smaller components:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue Basics</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/vue@next" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>FriendList</h1>
+    </header>
+    <section id="app">
+      <!-- These are so called smaller components that can only be recognized by Vue, and the name is created by us -->
+      <friend-contact></friend-contact>
+      <friend-contact></friend-contact>
+      <friend-contact></friend-contact>
+    </section>
+  </body>
+  <script src="https://unpkg.com/vue@3"></script>
+  <script src="app.js"></script>
+</html>
+```
+
+```javascript
+const app = Vue.createApp({
+  //This is so called main component
+  data() {
+    return {};
+  },
+});
+//This this the smaller component
+app.component('friend-contact', {
+  //This is the template for this component, and of course the main component can also have it's own template.
+  //Note: In this template, we do not use "v-for" at first li
+  template: `
+    <ul>
+        <li>
+          <h2>{{friend.name}}</h2>
+          <button @click="toggleDetails">
+            {{visibility?"Hide" : "Show"}} Details
+          </button>
+          <ul v-if="visibility">
+            <li><strong>Phone:</strong>{{friend.phone}}</li>
+            <li><strong>Email:</strong> {{friend.email}}</li>
+          </ul>
+        </li>
+      </ul>
+    `,
+  data() {
+    return {
+      visibility: false,
+      friend: {
+        id: 'manuel',
+        name: 'Manuel Lorenz',
+        phone: '01234 5678 991',
+        email: 'manuel@gmail.com',
+      },
+    };
+  },
+  methods: {
+    toggleDetails() {
+      this.visibility = !this.visibility;
+    },
+  },
+});
+app.mount('#app');
+```
+
+But still we foud some other problem here: Alough now all the smaller components works independently, but we now can just create the component of the same content, and we will handle it in the further lecture.
