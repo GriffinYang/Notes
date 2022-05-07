@@ -547,3 +547,90 @@ app.mount('#app');
 ```
 
 But still we foud some other problem here: Alough now all the smaller components works independently, but we now can just create the component of the same content, and we will handle it in the further lecture.
+
+## The Real Vue
+
+The Vue project is configured such that it loads and runs the main.js file which is in folder "src" the first.
+
+So now let's look at the basic directory structure of Vue with Vue CLI:
+node_modules:WHich is created by Vue CLI automatically, public and src folder which is the core directory for our project. Besides there are several core files:
+babel.config.js,package-lock.json and package.json, these files build the dependencies for the project.
+
+The public folder contains our html files, and src folder contains assets and components files, which contains the used sources and our smaller components, the main components and js are put in src folder directly.
+Here's an example:
+https://github.com/GriffinYang/first-vue
+
+But eventually we found that in this project we could have two individual components, and they will work without effecting the other components. But We could only have the same data in it. In order to solve this problem, we could use "props".
+
+The "props" is the shorthand of properties, it's created in components as an array, please note when it's created, it should not contains hyphen("-"), insted we use Capitalized second word's first letter, but when we invoke in components, it should use hyphen. Because in components, it's the html code, it should follow the html property rule, and in script it should meet the javascript property rule.And here's the example:
+https://github.com/GriffinYang/first-vue
+
+##### <strong>Note:initial-version is the previous version</strong>
+
+#### <strong>Note:Here's the thing:Once we define a prop value, we could not change it anymore, so in order to manipulate the value , we could give this prop value to any normal data property, than use this data property instead of the initial prop.</strong>
+
+In fact, the props can be an array , also it can be an object, in the object, every property can set the default type:
+
+```javascript
+props:{
+  name:String,
+  phoneNumber:String,
+   }
+```
+
+Or we could make every property be an object, and then we could set more properties for them:
+
+```javascript
+props: {
+  name:
+  {
+  type: String,
+  required: true,
+  },
+  phoneNumber:
+  {
+  type: String,
+  required: true,
+  },
+  emailAddress:
+  {
+  type: String,
+  required: true,
+   },
+isFavoriated: {
+  type: String,
+  required: false,
+  default: '0',
+  validator: function(value) {
+  return value === '0' || value === '1';
+  },
+ },
+},
+```
+
+In the code above, each prop object has such properties:
+
+<li>type:Set the default type</li>
+<li>required:Set if this props is required, if it is true, when we set the component without set this prop, Vue will throw an alert, but not an error</li>
+<li>default:It is used along with required is false,it set the default value to this prop</li>
+<li>validator:Set an function judge if this prop is valid, if not, vue will throw an alert, instead an error</li>
+
+#### <strong>Note: all the properties of each prop object are predefined, we could not change them.</strong>
+
+https://github.com/GriffinYang/first-vue
+
+With this form, we could more easily to make the other understand the component props,when the props does not meet the requirements, it will send the alert message, it's ferry useful when we work with a team, and Specifically, the following value types (type property) are supported:
+
+<li>String</li>
+<li>Number</li>
+<li>Boolean</li>
+<li>Array</li>
+<li>Object</li>
+<li>Date</li>
+<li>Function</li>
+<li>Symbol</li>
+But type can also be any constructor function (built-in ones like Date or custom ones).
+
+And yes, absolutely we could iterate over an array of objects like we did before in template, we could do the same in the components:
+
+https://github.com/GriffinYang/first-vue
