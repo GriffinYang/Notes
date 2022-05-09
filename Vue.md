@@ -634,3 +634,15 @@ But type can also be any constructor function (built-in ones like Date or custom
 And yes, absolutely we could iterate over an array of objects like we did before in template, we could do the same in the components:
 
 https://github.com/GriffinYang/first-vue
+
+### The use of $emit("function name",paramters...)
+
+When we set a method in components to change the value of some element, it just changes content on this specific component. So it means that it doesn't tell the main component what happened there, so the server doesn't know either. So we could use "$emit("function name",paramters...)" in the event listener in components which give us a chance to custom an event listener, with this event listener set we could add it to the main component, then change the content of current page by changing the content of the main component.
+
+And here's example:
+
+https://github.com/GriffinYang/first-vue
+
+Except for that, we could also use "emits" object to set the listeners for custom event listeners, if we use an event listener incorrectly, it will send us the error message:
+
+https://github.com/GriffinYang/first-vue
