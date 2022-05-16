@@ -646,3 +646,384 @@ https://github.com/GriffinYang/first-vue
 Except for that, we could also use "emits" object to set the listeners for custom event listeners, if we use an event listener incorrectly, it will send us the error message:
 
 https://github.com/GriffinYang/first-vue
+
+#### Use of provide and inject
+
+Sometimes, we need to build a communication among multiple components, assume we have four smaller components:a.vue,b.vue,c.vue,d.vue and a main component:m.vue. m.vue integrates a.vue and b.vue, and the b.vue uses c.vue and c.vue uses d.vue. So m.vue is the top component the the d.vue is the bottom component. So in order to build a communication between components m.vue and d.vue. We need some way to make it, so there comes to an new array=>"inject" and a new method=>"provide". The provide method is used in top component that offers the provided method and data to be used in bottom component, so the inject array is used by bottom component to inject the provided data and methods.
+
+And here's an example:
+App.vue(Top component)
+
+```javascript
+<template>
+  <div>
+    <active-element
+      :topic-title="activeTopic && activeTopic.title"
+      :text="activeTopic && activeTopic.fullText"
+    ></active-element>
+    <knowledge-base></knowledge-base>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      topics: [
+        {
+          id: 'basics',
+          title: 'The Basics',
+          description: 'Core Vue basics you have to know',
+          fullText:
+            'Vue is a great framework and it has a couple of key concepts: Data binding, events, components and reactivity - that should tell you something!',
+        },
+        {
+          id: 'components',
+          title: 'Components',
+          description:
+            'Components are a core concept for building Vue UIs and apps',
+          fullText:
+            'With components, you can split logic (and markup) into separate building blocks and then combine those building blocks (and re-use them) to build powerful user interfaces.',
+        },
+      ],
+      activeTopic: null,
+    };
+  },
+  provide() {
+    return {
+      topics: this.topics,
+      selectTopic: this.activateTopic
+    };
+  },
+  methods: {
+    activateTopic(topicId) {
+      this.activeTopic = this.topics.find((topic) => topic.id === topicId);
+    },
+  },
+  mounted() {
+    setTimeout(() => {
+      this.topics.push({
+        id: 'events',
+        title: 'Events',
+        description: 'Events are important in Vue',
+        fullText: 'Events allow you to trigger code on demand!'
+      });
+    }, 3000);
+  }
+};
+</script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+html {
+  font-family: sans-serif;
+}
+body {
+  margin: 0;
+}
+section {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  margin: 2rem auto;
+  max-width: 40rem;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+li {
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 15rem;
+  margin: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+h2 {
+  margin: 0.75rem 0;
+  text-align: center;
+}
+
+button {
+  font: inherit;
+  border: 1px solid #c70053;
+  background-color: #c70053;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+button:hover,
+button:active {
+  background-color: #e24d8b;
+  border-color: #e24d8b;
+}
+</style>
+```
+
+ActiveElement.vue
+
+```javascript
+<template>
+  <section>
+    <h2>{{ topicTitle }}</h2>
+    <p>{{ text }}</p>
+  </section>
+</template>
+
+<script>
+export default {
+  props: ['topicTitle', 'text'],
+};
+</script>
+```
+
+KnowledgeBase.vue
+
+```javascript
+<template>
+  <section>
+    <h2>Select a Topic</h2>
+    <knowledge-grid></knowledge-grid>
+  </section>
+</template>
+
+<script>
+export default {};
+</script>
+```
+
+KnowledgeGrid.vue
+
+```javascript
+<template>
+  <ul>
+    <knowledge-element
+      v-for="topic in topics"
+      :key="topic.id"
+      :id="topic.id"
+      :topic-name="topic.title"
+      :description="topic.description"
+    ></knowledge-element>
+  </ul>
+</template>
+
+<script>
+export default {
+  inject: ['topics'],
+};
+</script>
+```
+
+KnowledgeElement.vue(Bottom component)
+
+```javascript
+<template>
+  <li>
+    <h3>{{ topicName }}</h3>
+    <p>{{ description }}</p>
+    <button @click="selectTopic(id)">Learn More</button>
+  </li>
+</template>
+
+<script>
+export default {
+  inject: ['selectTopic'],
+  props: ['id', 'topicName', 'description'],
+  emits: ['select-topic'],
+};
+</script>
+```
+
+As we see, with provide and inject we could invoke the data we want at any time we need.
+
+#### import components locally
+
+As we see, we could import all the components in main.js, but in this way. All the components will be loaded from the the server, that's no problem with small project, but if we have a huge number of components in a project, this way is not the best choice. So we could just import the components which one is needed in this smaller components. Then only the needed components will be loaded in current component, that will reduce server's memory usage. And more efficient.
+
+#### Example:
+
+```javascript
+import TheComponent from './TheComponent.vue';
+...
+export default {
+  components:{
+    TheComponent,
+    ...
+  }
+}
+```
+
+#### scoped style:
+
+In vue, we could use style tag to set the style of the component, but in fact, this style will always be global, so it means that whereever we set an style in some component, the other component will also be effected. However, sometimes we do not want this behavior. So we could add an "scoped" attribute in the style tag, then the style will only be applied in this current component.
+
+#### slot:
+
+When we want to use the specified css in a component, we could add this css to this template directly. But now this css is not resuable, so the css will only be applied to this template. So if when we want to reuse css, we could set a specified template, and this template will use the specified css, and then we could use this template to include that template, the css will also be applied to the template:
+
+```javascript
+//initial template
+<template>
+<section>
+...
+</section>
+</template>
+...
+```
+
+Now we want the section in this template to apply the specified CSS. We could set the css to the section. Also we could create a new template:
+
+```javascript
+//BaseContainer.vue
+<template>
+<div>
+<slot></slot>
+</div>
+</template>
+...
+```
+
+And then we could change that initial template to :
+
+```javascript
+<template>
+//BaseContainer template
+<base-container>
+...
+</base-container>
+</template>
+...
+```
+
+Then we made the css of BaseContainer be reuseable. We could use that template anywhere now. And slot represents the html elements inside of the template.
+
+#### Named slot
+
+We could own one slot in a template, also we could have not only one slot, so at this time, we cwhen we set numbers of slots, we need to name them, all of the slots should have the name, and there could have only one slot can be unnamed as a default slot:
+
+```javascript
+//BaseContainer.vue
+<template>
+<div>
+<header>
+<slot name="header"></slot>
+</header>
+<slot></slot>
+</div>
+</template>
+...
+```
+
+When we use the named slot, we could make sure they are included in the template
+
+```javascript
+<template>
+//BaseContainer template
+<base-container>
+<template v-slot:(#)header>
+...
+</template>
+<template v-slot:default>
+...
+</template>
+...
+</base-container>
+</template>
+...
+```
+
+#### Pass the props in slot
+
+The slot and invoked components are separated, so if we want to communicate between slot and components, we need use a bridge. The first step is to set a property in components:
+
+```javascript
+//CourseGoals.vue
+<template>
+<ul>
+<li v-for="goal in goals" :key="goal">
+<slot :item="goal">
+</li>
+</ul>
+</template>
+...
+```
+
+So now this "item" property is bind in this template, then we use it with object "slotProps", this object contains all the properties in this template, so we could invoke it like this:
+
+```javascript
+<course-goals>
+<template #default="slotProps">
+<h2>{{slotProps.item}}</h2>
+</template>
+</course-goals>
+```
+
+#### Dynamic components:
+
+As we learned, if we want to dynamically display the specific component we could use "v-if" property to achieve this:
+
+```javascript
+<template>
+  <div>
+    ...
+    <active-goals v-if="selectedComponent==='active-component'"></active-goals>
+    ...
+  </div>
+</template>
+```
+
+But obviously, it's not efficient enough to, when we add so many components in it, we need write "v-if" multiple times, so we could use "<component :is="selectedComponent"></component>" instead:
+
+```javascript
+<template>
+  <div>
+    ...
+    <component :is="selectedComponent"></component>
+    ...
+  </div>
+</template
+```
+
+But with this way, we have a problem here, when we switch among components, the previous component will be removed and the new component will be added, so it caused an issue: If we input some data into a component, then switch to another component, after we back that component, the previous data will be removed. In order to solve this problem, we could use tag:
+"<keep-alive></keep-alive>" to include the component:
+
+```javascript
+<template>
+  <div>
+    ...
+    <keep-alive>
+    <component :is="selectedComponent"></component>
+    </keep-alive>
+    ...
+  </div>
+</template
+```
+
+When we use a component in a component, this component will be rendered in this component, if we want this component to be rendered to a specific template, we could use teleport tag:
+
+```javascript
+<template>
+  <div>
+    ...
+    <teleport to="css selector">
+    <keep-alive>
+    <component :is="selectedComponent"></component>
+    </keep-alive>
+    </teleport>
+    ...
+  </div>
+</template>
+```
