@@ -1027,3 +1027,5 @@ When we use a component in a component, this component will be rendered in this 
   </div>
 </template>
 ```
+
+### Note：Both v-model and ref can send the value to Vue, but here's some differences: When we use v-model, the type of the value can be transformed automatically, for example: When we get a input value, if we input a number, the type will be number, but when we input a string, the type will be string. But the ref won't.
