@@ -121,9 +121,9 @@ public class Test{
 
 ```
 
-### 运算符
+## 运算符
 
-#### 表达式的定义：数据与运算符的组合
+### 表达式的定义：数据与运算符的组合
 
 #### 赋值运算符
 
@@ -183,13 +183,11 @@ public class Test{
 
 3)return：作用在方法内，结束方法并返回结果
 
-### 数组
-
-#### 概念
+## 数组
 
 一种特殊的数据类型，可以储存多个相同类型的数据
 
-#### 组成
+### 组成
 
 数据类型 数组标识符 [下标位]=数据
 
@@ -247,7 +245,7 @@ Java 将世间万物视为不同的对象，而所有的对象都由属性和方
 可以用实例化后的对象对于这些属性和方法进行调用。因此类是对象的抽象表达，而实例化后的对象则
 为类的具体表达
 
-#### 类的声明
+### 类的声明
 
 修饰符（public/default） class 类的标识符 {
 
@@ -315,9 +313,9 @@ ClassName object=new ClassName(参数一，参数二，参数三...);
 
 **private**:仅能在当前类中被直接使用
 
-### 封装
+## 封装
 
-#### 实现：使用 private 修饰属性或者方法
+### 实现：使用 private 修饰属性或者方法
 
 #### 目的：将类中的属性和部分方法隐藏从而保护其不会被随意改变，其中属性被设置为 private 的时候，我们可以生成 getter 和 setter 方法来获取和修改这个属性，而在 setter 中我们可以设置判断条件以是的被赋予的值是合法的
 
@@ -349,7 +347,7 @@ this.子类属性2=子类参数2;
 继而满足子类的需求，而重写方法需保证，子类中的同名方法标识符私有度不高于父类中的同名方法
 同时这两个方法的参数列表也需要完全对应
 
-### 多态
+## 多态
 
 **概念：**同一个事物，使用不同的条件，作用结果不一样，其是基于继承之上的，主要的体现在于方法的重写以及**向上**和**向下转型**
 
@@ -374,7 +372,7 @@ this.子类属性2=子类参数2;
 
 该关键字意为静态的，使用该关键字修饰的变量和方法可以直接被类名方法和调用。初次之外，使用该关键字修饰的成员变量在该类中是唯一的，即使该类创建了多个对象，该关键字修饰的变量都只会引用同一个变量。
 
-### 异常
+## 异常
 
 所谓异常即为运行是出现的意外情况，而这些意外情况会到找程序的终止，为了避免这些异常导致程序的崩溃我们使用异常的捕捉来为这些异常出现提供一条解决的途径：
 
@@ -390,7 +388,7 @@ this.子类属性2=子类参数2;
 
 **throws**：声明一个异常（在方法参数之后使用，声明可能出现的异常）
 
-### 集合类
+## 集合类
 
 集合类是一种数据结构，它可以存储多个元素，并且可以进行一些操作，比如添加、删除、查找、排序等。这里主要由三种常用的接口：List，Set，Map。其中前两者都是继承了 Collection 接口，而 Map 则与 Collection 接口继承了 Map 接口。这三者的区别如下：
 
@@ -398,7 +396,7 @@ List 接口中实现类的内容是有序的，而 Set 接口中实现类的内�
 
 至于 Map 接口，它是一种键值对的集合，它的键值对是无序的，而且键值对中的键不可以重复(值则可重复)。
 
-#### List 接口中的实现类
+### List 接口中的实现类
 
 ArrayList:这是一个动态的集合，它可以随时增加或删除元素，而且它的元素是有序的。我们可以通过 add() 方法来添加元素，通过 remove() 方法来删除元素，通过 get() 方法来获取元素，通过 set() 方法来修改元素，通过 indexOf() 方法来获取元素的索引，通过 lastIndexOf() 方法来获取元素的最后一次出现的索引，通过 contains() 方法来判断元素是否存在，通过 size() 方法来获取集合中元素的个数。
 
@@ -552,3 +550,422 @@ Xucc:Xu Mengcan->Girl
             System.out.println(me.getKey()+":"+me.getValue().toString());
         }
 ```
+
+### 泛型
+
+所谓泛型，就是指在编译时不确定类型的变量，而在运行时可以指定类型的变量。一旦我们在集合声明的时候规定了泛型，那么该集合就只能存储指定类型的数据了。一旦我们添加了一个不属于泛型规定的数据，则编译失败。除此之外一旦我们规定了一个集合的泛型，我们在遍历该集合的时候便不再需要首先使用Object类型将其遍历而后再将object强制转为指定类型了，因为一但规定了泛型，我们的集合之中就不会存在其他类型的数据了：
+
+```java
+//声明一个泛型集合
+        List<String> list=new ArrayList<String>();
+        list.add("Rongxin Yang");
+        list.add("T-iky79");
+        list.add("Xucc");
+        list.add("Griffin Yang");
+```
+
+## 枚举类
+
+所谓枚举就是将同一个类型的数据全部列举出来而后单独组成一个类，此时这个类便称作为枚举类。其实际上相当于是一个同拥有多个可能值得单独常量，当我们使用枚举后，只可选择其中中的一个值：
+
+```java
+public enum Gender {
+    Male,Female,Boy,Girl,Man,Women
+}
+```
+
+使用：
+
+```java
+Person person = new Person("Rongxin Yang",22,Gender.Boy);
+//此处我们调用了Gender枚举类，此时它的值只可以是枚举中已存在的 “Male,Female,Boy,Girl,Man,Women”
+```
+
+## Java框架篇
+
+### 日期类
+
+### Date(已弃用)
+
+主要构造方法：
+
+Date(int year,int month,int date)，Date(int year,int month,int date,int hrs,int min,int sec)
+
+注意其中的年所☞的是自1900到当前时间点的时间长度，故我们若想得到当前的年份则需要额外加上1900才可以。其中常用的几个方法如下：
+
+getDate()：获取今天是一个月中的第几天
+
+getDay()：获得今天是星期几
+
+getHours()：获得现在是几点
+
+getMinutes()：获得现在是几分
+
+getMonth()：获得当前的月份，注意月份需要加一
+
+getSeconds()：获得当前的秒数
+
+### Calendar(Date 的替代 )
+
+这是一个抽象类，所以我们不可以直接进行实例化，而是使用其静态方法进行对象的创建：
+
+```java
+Calendar cal = Calendar.getInstance();
+```
+
+ Calendar.get(Calendar.DAY_OF_MONTH): 获取今天是一个月中的第几天
+
+ Calendar.get(Calendar.DAY_OF_WEEK): 获得今天是星期几
+
+ Calendar.get(Calendar.HOUR_OF_DAY): 获得现在是几点
+
+ Calendar.get(Calendar.MINUTE): 获得现在是几分
+
+ Calendar.get(Calendar.MONTH): 获得当前的月份，注意月份需要加一
+
+ Calendar.get(Calendar.SECOND): 获得当前的秒数
+
+#### 直接获得当前具体时间
+
+使用Date类时，我们直接输出Date对象即可得到当前时间，但是此时时间是标准时间，若想将其转换为特定的时间格式我们可以通过引入SimpleDateFormat进行转换：
+
+```java
+SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a MM/dd/yyyy");
+Date date=new Date();
+sdf.format(date);
+```
+
+输出值为：
+
+```java
+12:00 PM 12/22/2022
+```
+
+以下为SimpleDateFormat的格式对应表：
+
+<table class="striped"> <caption style="display:none">Chart shows pattern letters, date/time component, presentation, and examples.</caption> <thead> <tr> <th scope="col" style="text-align:left">Letter </th>
+<th scope="col" style="text-align:left">Date or Time Component </th>
+<th scope="col" style="text-align:left">Presentation </th>
+<th scope="col" style="text-align:left">Examples </th>
+</tr>
+</thead> <tbody> <tr> <th scope="row">
+<code>G</code> </th>
+<td>Era designator </td>
+<td>
+<a href="#text">Text</a> </td>
+<td>
+<code>AD</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>y</code> </th>
+<td>Year </td>
+<td>
+<a href="#year">Year</a> </td>
+<td>
+<code>1996</code>; <code>96</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>Y</code> </th>
+<td>Week year </td>
+<td>
+<a href="#year">Year</a> </td>
+<td>
+<code>2009</code>; <code>09</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>M</code> </th>
+<td>Month in year (context sensitive) </td>
+<td>
+<a href="#month">Month</a> </td>
+<td>
+<code>July</code>; <code>Jul</code>; <code>07</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>L</code> </th>
+<td>Month in year (standalone form) </td>
+<td>
+<a href="#month">Month</a> </td>
+<td>
+<code>July</code>; <code>Jul</code>; <code>07</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>w</code> </th>
+<td>Week in year </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>27</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>W</code> </th>
+<td>Week in month </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>2</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>D</code> </th>
+<td>Day in year </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>189</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>d</code> </th>
+<td>Day in month </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>10</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>F</code> </th>
+<td>Day of week in month </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>2</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>E</code> </th>
+<td>Day name in week </td>
+<td>
+<a href="#text">Text</a> </td>
+<td>
+<code>Tuesday</code>; <code>Tue</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>u</code> </th>
+<td>Day number of week (1 = Monday, ..., 7 = Sunday) </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>1</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>a</code> </th>
+<td>Am/pm marker </td>
+<td>
+<a href="#text">Text</a> </td>
+<td>
+<code>PM</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>H</code> </th>
+<td>Hour in day (0-23) </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>0</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>k</code> </th>
+<td>Hour in day (1-24) </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>24</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>K</code> </th>
+<td>Hour in am/pm (0-11) </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>0</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>h</code> </th>
+<td>Hour in am/pm (1-12) </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>12</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>m</code> </th>
+<td>Minute in hour </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>30</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>s</code> </th>
+<td>Second in minute </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>55</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>S</code> </th>
+<td>Millisecond </td>
+<td>
+<a href="#number">Number</a> </td>
+<td>
+<code>978</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>z</code> </th>
+<td>Time zone </td>
+<td>
+<a href="#timezone">General time zone</a> </td>
+<td>
+<code>Pacific Standard Time</code>; <code>PST</code>; <code>GMT-08:00</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>Z</code> </th>
+<td>Time zone </td>
+<td>
+<a href="#rfc822timezone">RFC 822 time zone</a> </td>
+<td>
+<code>-0800</code> </td>
+</tr>
+<tr> <th scope="row">
+<code>X</code> </th>
+<td>Time zone </td>
+<td>
+<a href="#iso8601timezone">ISO 8601 time zone</a> </td>
+<td>
+<code>-08</code>; <code>-0800</code>; <code>-08:00</code> </td>
+</tr>
+</tbody></table>
+
+当我们使用Calendar时，我们可以使用其getTime()方法来获取当前时间，其返回值也是一个Date类型的数据。
+
+### 文件流
+
+我们的文件流指的是再程序和文件之间的连接，它可以读取文件的内容，也可以向文件写入内容。最原始的是字节流，它是一种按字节读取和写入的流。 我们主要使用的是FileInputStream和FileOutputStream这两个类来读写文件。而它们均为继承自InputStream和OutputStream类，所以我们可以使用它们的方法来读写文件。
+
+#### File 文件对象
+
+这个对象是用以获取文件的，它可被用于创建FileinputStream和FileOutputStream对象等。初次之外它也可以用以获取文件的名称、大小、创建时间、修改时间等。
+
+##### File对象的构造方法
+
+File(String pathname)：构造一个文件对象，其中pathname是文件的路径。
+
+##### File对象的常用方法
+
+createNewFile()：创建一个文件，如果文件已经存在，则返回false。
+
+createTempFile(String prefix,String suffix)：创建一个临时文件，其中prefix是文件的前缀，suffix是文件的后缀。
+
+createTempFile(String prefix,String suffix,File directory)：创建一个临时文件，其中prefix是文件的前缀，suffix是文件的后缀，directory是文件的目录。
+
+delete(): 删除文件。
+
+exists()：判断文件是否存在。
+
+lastModified()：返回文件的最后修改时间。
+
+length()：返回文件的大小。
+
+isHidden()：判断文件是否隐藏。
+
+getAbsoluteFile()：返回文件的绝对路径。
+
+getPath()：返回文件的相对路径。
+
+#### 其中FileInputStream类的常用构造方法是
+
+FileInputStream(File file)：使用指定的文件来构造一个FileInputStream对象。
+
+FileInputStream(String filePath)：使用指定文件的路径直接构造一个FileInputStream对象。
+
+#### FileInputStream类的常用方法是
+
+read()：读取一个字节。
+
+read(byte[] b)：将读取到的内容存放在b数组之中。一次存储的的数据量是b数组的长度。
+
+read(byte[] b,int off,int len)：将读取到的内容存放在b数组之中，其中off是偏移量，len是读取的长度。
+
+skip(long n)：跳过n个字节。
+
+close(): 关闭文件输入流。
+
+#### FileOutputStream类的常用构造方法是
+
+FileOutputStream(File file)：使用指定的文件来构造一个FileOutputStream对象。
+
+FileOutputStream(String filePath)：使用指定文件的路径直接构造一个FileOutputStream对象。
+
+#### FileOutputStream类的常用方法是
+
+write(int b)：写出一个字节。
+
+write(byte[] b)：写出数组b中所有的字节数据至指定的文件之中。
+
+write(byte[] b,int off,int len):从数组b中off开始指定的长度len的字节数据至指定的文件之中。
+
+write(int b)：写出一个指定的字节至指定的文件之中。
+
+close()：关闭文件输出流。
+
+#### InputStreamReader & InputStreamReader
+
+其将字节流转换为字符流,转为字符流的好处是，字符流会使用缓存，而常规的字节流则不会使用缓存，因此如果你需要的是字符串层次上的操作使用字符则会提高程序的效率。然而事实上字符流只是基于字节流之上的，可以理解为字节流的优化。
+
+它的构造方法是：
+
+```java
+InputStreamReader(InputStream in,[String charsetName||Charset cs]) //第一个参数是字节流，第二个参数是字符集名称或者字符集对象。
+OutputStreamWriter(OutputStream in,[String charsetName||Charset cs]) //第一个参数是字节流，第二个参数是字符集名称或者字符集对象。
+```
+
+既然都叫字符流了，当然它便支持将数据写入一个字符数组之中了
+
+```java
+read(char[] cbuf,int off,int len)
+write(char[] cbuf||String str,int off,int len) 
+```
+
+只是可惜的是这个数组长度硬是固定的，所以这也就比较适合字符串的修改，当然我们也可以使用传统的 read() 和 write(int c),除此之外，我们使用了字符流意味着我们必须最后要OutputStreamWriter这个对象进行flush()操作，否则数据不会写入文件。
+
+#### BufferedReader & BufferedWriter
+
+但是毕竟前者这个字符流也还是一个字符一个字符的操作，由此为了更高效率的完成字符的读取操作等，我们还有一个BufferedReader和BufferedWriter类，它们的构造方法是：
+
+```java
+BufferedReader(Reader in)
+BufferedWriter(Writer out)
+```
+
+与前者相比，我们的reader可以使用reandLine()方法一次读取一行的数据并将其存为一个字符串，此时我们再将这个返回的字符串转为字节数组，此时我们就可以使用write(int b)方法将数据写入文件了。此时我们的读写效率将会再次的到提高，当然这依旧只是对于字符串操作有效
+
+#### DataInputStream & DataOutputStream
+
+既然我们之前有提到字符流不可以用以处理二进制文件，那么我们便可以使用DataInputStream和DataOutputStream类来处理二进制文件。它们是专职处理二进制文件的类，它们的构造方法是：
+
+```java
+    DataInputStream(InputStream in)
+    DataOutputStream(OutputStream out)
+```
+
+然而它们也同样有一缺点：它们均为字节流，故而不支持缓存，因此它们的执行效率同样很是低下
+
+由于字符流无法胜任二进制文件的操作，也就是说当我们想要对于除了字符串以外的文件进行操作的时候，字符流是不能够帮我们做到的。虽然我们或许也可以得到结果，但是此时速度很慢不说，得出的结果也是无法使用的。举个例子，当我们使用字符流实现了文件复制粘贴的操作，或许，我们过了很长一段时间可以实现文件的复制粘贴（有可能比字节流还慢），我们复制的这个文件还会被损坏。所以这就得不偿失了。而且如若我们想要使用DataInputStream和DataOutputStream来弥补，效率又过低。那么我们既要再操作这些非字符串操作的文件，又要提高效率该怎么做呢？虽然我们常规的字节流很慢，但我们还有非常规的字节流啊，它可以帮我们解决这个问题。而这非常规的字节流就是BufferedInputStream和BufferedOutputStream。它们是字节流，同时它们也会使用缓存，所以它们兼顾了速度和功能性是可以称得上最好的选择。
+
+#### BufferedInputStream & BufferedOutputStream
+
+```java
+BufferedInputStream(InputStream in)
+BufferedOutputStream(OutputStream out)
+```
+
+BuffferdInputStream和BufferedOutputStream加上了Buffered修饰也就意味着它们正式拥有了使用缓存的能力，因此它们便获得了效率提升。除此之外又因为它们本身实际上还是字节流，所以它们也可以用于字符流的操作，也就是说它们可以处理字符串操作以外的操作。
+
+#### ObjectInputStream & ObjectOutputStream
+
+又是我们发现一些文件的后缀名很是奇怪，我们甚至无法将其打开。这是因为它们是专门用于处理对象的，而对象的序列化是一种把对象转换为字节流的操作，而反序列化是一种把字节流转换为对象的操作。而ObjectInputStream和ObjectOutputStream是专门用于处理对象的序列化和反序列化的类，它们的构造方法是：
+
+```java
+    ObjectInputStream(InputStream in)
+    ObjectOutputStream(OutputStream out)
+```
+
+这两个对象与前面的不同，它们操作对象实际上是对于同一个文件进行操作的，因此首先它们的构造方法中的in和out一定是相同的，除此之外，它们对于对象的读写都是基于方法的，其中writeObject(object)和readObject()便是核心了。它们将一对象存于一个文件之中，而后对于该文件进行序列化和反序列化从而实现对象的储存和取出。但需要注意的是在我们对于一个对象进行序列化和反序列化之前我们需要使其可序列化，即实现Serializable接口。
