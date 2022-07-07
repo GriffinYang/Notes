@@ -969,3 +969,44 @@ BuffferdInputStream和BufferedOutputStream加上了Buffered修饰也就意味着
 ```
 
 这两个对象与前面的不同，它们操作对象实际上是对于同一个文件进行操作的，因此首先它们的构造方法中的in和out一定是相同的，除此之外，它们对于对象的读写都是基于方法的，其中writeObject(object)和readObject()便是核心了。它们将一对象存于一个文件之中，而后对于该文件进行序列化和反序列化从而实现对象的储存和取出。但需要注意的是在我们对于一个对象进行序列化和反序列化之前我们需要使其可序列化，即实现Serializable接口。
+
+## 线程
+
+其主要构造方法是：
+
+```java
+    Thread(String name)
+    Thread(Runnable target)
+    Thread(Runnable target, String name)
+    Thread(ThreadGroup group, Runnable target)
+    Thread(ThreadGroup group, Runnable target, String name)
+    Thread(ThreadGroup group, Runnable target, String name, long stackSize)
+```
+
+所谓线程即为进程中的一部分，是程序执行中最小的单元。其实现类即为Thread类，这个类实现了Runnable接口由此获得了线程实现这一功能。如果我们希望一个类可以使用多线程的模式进行执行则我们可以选择继承Thread类，并重写run方法即可。注意其中的run方法是一个抽象方法，我们需要重写它以实现我们的线程的功能,如果这个类中又一个功能需要实现多线程运行，则可直接将其写在run方法中。之后我们调用start方法即可启动线程。
+
+除此之外我们也可以通过实现Runnable接口的方式来实现，只是如果我们选择使用实现接口来获得线程执行这一功能。但是我们使用该方式之后则无法使用start方法直接来启动线程。因为该接口中无start方法，而且我们也未将其重写，古不可使。此时我们便需要借助Thread类中的 Thread(Runnable target)和Thread(Runnable target, String name)这两个构造方法进行创建线程。因为Runnable是个接口是不可创建对象的，我们此时只需将我们创建的实现类置于其中即可，此时我们使用Thread线程对象直接调用start方法即可。倘若我们需要多次使用该实现类，则只需创建指定数量的Thread类即可，如：
+
+```java
+//ThreadByRunnable.java
+public class ThreadByRunnable implements Runnable {
+
+    @Override
+    public void run() {
+        for (int i=1; i<=20;i++){
+            System.out.println(Thread.currentThread().getName()+" "+i+" "+" has started!");
+            System.out.println(Thread.currentThread().getName()+" "+i+" "+" has ended!");
+        }
+    }
+}
+//ThreadMain.java
+public class ThreadMain {
+    public static void main(String[] TXT) {
+        ThreadByRunnable byRunnable = new ThreadByRunnable();
+        Thread threadAlpha=new Thread(byRunnable,"Alpha");
+        Thread threadBeta=new Thread(byRunnable,"Beta");
+        threadAlpha.start();
+        threadBeta.start();
+    }
+}
+```
