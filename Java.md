@@ -1010,3 +1010,66 @@ public class ThreadMain {
     }
 }
 ```
+
+### 线程的阻塞
+
+现成的阻塞分为两种，一种为睡眠模式(sleep),在睡眠模式下，我们的当前线程不会丢失线程锁(前提是要有锁，因此我们必须使用synchronized关键字将其包含)，由于睡眠至少有一个long的时间作为睡眠时间的，故当我们使用sleep方法时，即使不将其唤醒，他也会因为超时而被自动唤醒，然而我们也可以使用wait将当前线程挂起，直到其他线程唤醒它。如若我们在使用wait方法时未设置超时时长，那么如若我们不使用notify方法将其唤醒，那么该线程将一直处于休眠状态。但是在它休眠期间它会失去线程锁。直至其他的线程唤醒它，它才会获得线程锁。
+
+### 线程锁
+
+线程锁分为两种，以为方法锁，一种为代码块锁。所谓方法锁，就是将方法以syschronized关键字加锁，以保证在方法中的代码块中的代码块是线程安全的。以至于当同**一个对象** 使用同一个方法时，一旦该方法开始运行。其执行中的数据不会因为被其他线程中断而被改变。初次之外中断该线程的线程所使用的数据将会基于被中断线程以更更新的数据上进行更新。
+
+而代码块线程锁，就是将代码块以synchronized关键字加锁，以保证在代码块中的代码块是线程安全的。但是使用该方法，我们需要保证sychronized中所指的对象为同一个对象，此时所才会保证在代码块中的代码块是线程安全的：
+
+```java
+//SeeDoctor.JAVA
+public class SeeDoctor implements Runnable{
+    private final String name;
+
+    public SeeDoctor(String name) {
+        this.name = name;
+    }
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            synchronized(this){
+                try {
+                    synchronized(Thread.currentThread()){
+                        System.out.println("An urgent one："+(i+1)+" is on diagonal！");
+                        Thread.sleep(2000);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+
+//Main.JAVA
+Thread threadAlpha = new Thread(new SeeDoctor("P1"));
+        threadAlpha.setPriority(Thread.MAX_PRIORITY);
+        threadAlpha.start();
+
+        for (int i = 0; i < 20; i++) {
+            try {
+                synchronized(threadAlpha){
+                    System.out.println("An common one："+(i+1)+" is on diagonal！");
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+
+        }
+```
+
+在SeeDoctor类中我们设置了synchronized的对象为this，也就是测试类中threadAlpha对象。因此此时我们在后面的循环中同样使用threadAlpha作为synchronized的对象，从而保证了它们两者之间都是**通过同一个对象锁**进行同步的。
+
+### 线程礼让
+
+我们前面提到的sleep保证了当前线程返回到就绪状态，待时间超时再来重新抢占CPU，而wait则使得当前线程处于等待状态，直到被唤醒或者时间超时再来争夺CPU内存。而我们的yield则是使得当前线程暂时释放CPU，而后重新抢占CPU。也就是说它不存在等待这一说法，这也就是线程礼让。
+
+### 线程调用
+
+前面的线程调用指的是当前线程暂时释放CPU，而后重新抢占CPU。而join则是指当前的线程将不会释放CPU直至该线程结束。
