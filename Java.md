@@ -530,6 +530,16 @@ Xucc:Xu Mengcan->Girl
         }
 ```
 
+### 注：当我们使用list和set时，我们亦可以使用迭代器进行访问
+
+```java
+Iterator<Student>it=students.iterator();
+        while(it.hasNext()){
+            Student stu=it.next();
+            System.out.println(stu);
+        }
+```
+
 #### Map的遍历
 
 由于Map是一个键值对的集合，故而我们不能使用for循环来遍历它，而是使用增强for循环：
@@ -906,7 +916,7 @@ write(int b)：写出一个指定的字节至指定的文件之中。
 
 close()：关闭文件输出流。
 
-#### InputStreamReader & InputStreamReader
+#### InputStreamReader & OutputStreamWriter
 
 其将字节流转换为字符流,转为字符流的好处是，字符流会使用缓存，而常规的字节流则不会使用缓存，因此如果你需要的是字符串层次上的操作使用字符则会提高程序的效率。然而事实上字符流只是基于字节流之上的，可以理解为字节流的优化。
 
@@ -1073,3 +1083,419 @@ Thread threadAlpha = new Thread(new SeeDoctor("P1"));
 ### 线程调用
 
 前面的线程调用指的是当前线程暂时释放CPU，而后重新抢占CPU。而join则是指当前的线程将不会释放CPU直至该线程结束。
+
+## 网络编程
+
+网络编程是一种技术，它提供了一种通过网络进行通信的方式，它可以通过TCP/IP协议进行通信。在Java中这里有基于TCP/IP协议的Socket类来实现网络通信和基于UDP协议的DatagramSocket类来实现网络通信。其中前者是建立在客户端与服务端之间已建立连接的基础之上的，后者是建立在客户端与服务端之间没有建立连接的基础之上的。也就是说前者若想成功实现通信必须保证客户端与服务端同时在线，而后者不需要保证双方均已连接。
+
+### 基于TCP协议的Socket
+
+#### 服务端
+
+在服务端我们首先需要创建一个ServerSocket对象，然后调用accept()方法来接收客户端的连接请求。此时该方法将会返回一个Socket对象。若accept方法监听到指定的客户端连接请求，则会返回一个Socket对象，否则返回null。而监听的依据便是其内部参数（端口号），若客户端向该主机地址发送了请求且请求的端口号与accept方法参数中的端口号一致，那么该请求便被监听成功，此时accept方法返回一个Socket对象。当我们的服务端需要同时监听多个客户端的请求时我们可以使用线程的手段实现同时监听
+
+而在线程类中我们注意到我们的Socket既可以调用outputStream来向指定地址发送数据，事实上也可以调用inputStream来接收数据吗，这一点我们可以在下一个客户端中看到。这也就是Socket的功能，他实现上是实现网络编程的核心，我们可以通过它来实现数据的收发，从而实现网络的通信，在服务端我们通过serverCocket以accept方法来创建其对象，在服务端我们则通过目标ip地址和端口等信息参数进行对象的创建。
+
+而这个socket我们可以将其理解为是一个信息的转运中心，通过它我们的信息可以得知我们的信息的目标位置是什么，这也是为什么我们在客户端要规定服务端的ip地址和端口号的原因。我们用ip地址告诉路由器我们需要将该信息应该被发送至有用该指定ip地址的主机，这个主机可以是一个服务器，也可以是一台电脑或者一部手机等等可以联网的设备。而这个端口号便是告诉这台主机，该段信息应当被当前主机的哪一个具体的程序所接收，而这个指定的程序又可以通过这个端口号来接收这个信息。因此我们便可以将客户端的信息成功的传送到指定的位置了。
+
+而在服务端我们的serverSocket是接收方，所以我们使用accept方法所获取的socket便已经知道方法方的详细资料，其ip地址和端口号自然也可以得知。那么此时这个socket对象便也可以实现数据的收发了，因此我们可以通过它的inputStream和outputStream来实现接收和发送数据从而实现与客户端之间的通信。
+
+```java
+//服务端类
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.List;
+import java.util.Vector;
+
+public class MainServer extends Thread{
+    protected static List<Socket> sockets=new Vector<>();
+    private Socket socket=null;
+    private ServerSocket serverSocket=null;
+    boolean flag=true;
+    @Override
+    public void run() {
+        try {
+            serverSocket=new ServerSocket(9412);
+            while(flag){   //同时监听多个请求
+                socket=serverSocket.accept();
+                synchronized (sockets){
+                    sockets.add(socket);
+                }
+                new Thread(new ServerThread(socket)).start();//创建多线程实现同时处理多个监听对象
+            }
+        } catch (IOException e) {
+            flag = false;
+            e.printStackTrace();
+        }finally {
+            if(socket != null){
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if(serverSocket!=null){
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+}
+//线程处理类
+import java.io.*;
+import java.net.Socket;
+
+public class ServerThread extends MainServer implements Runnable {
+    private Socket socket;
+    private BufferedReader reader;
+    private PrintWriter writer;
+    private boolean loop=true;
+    public ServerThread(Socket socket) {
+    this.socket=socket;
+    }
+
+    @Override
+    public void run() {
+        try {
+            reader=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            System.out.println("Client@"+socket.getRemoteSocketAddress()+" has joined the chat!");
+            sendToClients("Client@"+socket.getRemoteSocketAddress()+" has joined the chat!");
+           while(loop){
+               String message=reader.readLine();
+               if(message==null){
+                   loop=false;
+                   continue;
+               }
+               System.out.println("Client@"+socket.getRemoteSocketAddress()+":"+message);
+               sendToClients(message);
+           }
+            closeChat();
+        } catch (IOException e) {
+            try {
+                closeChat();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    private void closeChat() throws IOException {
+        synchronized (sockets){
+            sockets.remove(socket);
+        }
+        System.out.println("Client@"+socket.getRemoteSocketAddress()+" has left the chatroom!");
+        sendToClients("Client@"+socket.getRemoteSocketAddress()+" has left the chatroom!");
+        socket.close();
+    }
+
+    private void sendToClients(String message) throws IOException {
+       synchronized (sockets){
+           for (Socket socket : sockets){
+               writer=new PrintWriter(socket.getOutputStream());
+               writer.println("Client@"+socket.getRemoteSocketAddress()+":"+message);
+               writer.flush();
+           }
+       }
+    }
+}
+//客户端类
+import java.io.*;
+import java.net.Socket;
+
+public class ClientAlpha {
+    public static void main(String[] TXT) {
+        Socket socket = null;
+        BufferedReader input=new BufferedReader(new InputStreamReader(System.in));
+        boolean flag=true;
+        PrintWriter writer=null;
+        BufferedReader reader = null;
+        try {
+            socket=new Socket("localhost",9412);
+            while (flag){
+                reader=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                writer=new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                BufferedReader finalReader = reader;
+                new Thread(()->{
+                   while (true){
+                       try {
+                           System.out.println(finalReader.readLine());
+                       } catch (IOException e) {
+                           throw new RuntimeException(e);
+                       }
+                   }
+                }).start();
+
+                String message = input.readLine();
+                while(true){
+                    System.out.println("Sent:"+message);
+                    writer.println(message);
+                    writer.flush();
+                    message=input.readLine();
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }finally {
+            try {
+                input.close();
+                reader.close();
+                writer.close();
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
+
+```
+
+### 基于UDP协议的Socket
+
+前文中我们提到基于TCP协议的网络通信需要事先建立连接，而UDP的不需要。那么它是怎样实现通信的呢：UDP协议将发送的数据都拆分成若干个数据包，而后将这些数据包直接发送至指定的地址，此时对方可以不在线。数据也可以正常发送，但是不能接收。即使在发送消息后，该用户登陆了，该用户也不能接收到该消息，因此为了解决该问题，**需要借助服务器代为保存**才可以。由于使用UDP不存在服务端和客户端，其都是客户端，因此我们仅仅需要DatagramPacket用以创建数据包而后使用DatagramSocket()创建对象以使用send和receive方法来发送和接受数据包即可。
+
+```java
+package DatagramMain;
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+
+public class DataGramMainAlpha {
+    public static void main(String[] TXT) throws IOException {
+        new Thread(()->{
+            try {
+                sentMessage();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+        new Thread(DataGramMainAlpha::receive).start();
+}
+public static void sentMessage() throws IOException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    while (true){
+        String message = reader.readLine();
+        DatagramPacket packet=new DatagramPacket(message.getBytes(StandardCharsets.UTF_8),0,message.length(), InetAddress.getByName("192.168.8.86"),9412);
+        new DatagramSocket().send(packet);
+    }
+}
+public static void receive(){
+    DatagramPacket receive=new DatagramPacket(new byte[1024],1024);
+    DatagramSocket socket= null;
+    try {
+        socket = new DatagramSocket(9412);
+    } catch (SocketException e) {
+        throw new RuntimeException(e);
+    }
+    try {
+        while (true){
+            socket.receive(receive);
+            String message=new String(receive.getData(),0,receive.getLength());
+            System.out.println(message);
+        }
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+}
+}
+
+```
+
+以上的代码便已经可以实现前面使用三个类才可以完成聊天功能的基于TCP协议的网络通信了。由此我们发现使用UDP可以大大减少我们的代码量，而且更加的容易理解，只是UDP协议无法保证通信的质量，若方不在线则信息无法正确的被送达，因此为了实现正常的通信，我们一般使用TCP和UDP的组合来实现。
+
+## XML的操作
+
+XML 全称（Extensible Markup Language ），是一种标记语言，用以存储和传输数据的标准格式。XML 是一种标记语言，其文件格式可以存储和传输任意数据。XML 是一种纯文本文件格式，其文件内容是由一系列标记组成的。XML 标记语言的文件名称以 .xml 结尾，其文件内容以 < 和 > 作为标记。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<friends> 
+  <friend id="1001"> 
+    <name type="PingYing">Rongxin</name>  
+    <age>21</age>
+  </friend>  
+  <friend id="1002"> 
+    <name type="PingYing">TXT</name>  
+    <age>20</age>
+  </friend>  
+  <friend id="1003"> 
+    <name type="PingYing">WHQ</name>  
+    <age>20</age>
+  </friend> 
+</friends>
+
+```
+
+我们的xml文件每一个标签所对应的都是一个元素节点即Node，而这整个xml文档便是一个document。其中这个document可以给通过Javaorg.w3c.dom包中的Document**接口**来表示，这个Document是由DocumentBuilder抽象类借助parse方法来对于指定的xml文件进行解析以获取其文本内容的(其参数即为xml文件的地址)。而这个DocumentBuilder则需要DocumentBuilderFactory这个抽象类借由newDocumentBuilder()来创建:
+
+```java
+ public static void main(String[] args) throws ParserConfigurationException {
+    ...
+        DocumentBuilderFactory factory=DocumentBuilderFactory.newDefaultInstance();
+        DocumentBuilder builder= factory.newDocumentBuilder();
+        doc=builder.parse("path:...\\*.xml");
+    ...
+ }
+```
+
+使用这个Document对象我们便可以通过其getElementsByTagName方法来获取其中的所有标签，这个方法的参数即为标签的名称，这个方法返回的是一个NodeList对象，这个对象可以通过getLength方法来获取其长度，而这个长度就是其中的元素的长度的总和。使用getElementsByTagName我们将只获得实际数量的element，如当我们使用getElementsByTagName("students"),我们便会得到\<student id="1001">，\<student id="1002">，\<student id="1003">但是除此之外我们也可以使用**getChildNodes()** 来获取 **一个元素** 如\<student id="1001">的所有子元素列表，而此时这个元素是由两个部分:标签和文本格式空格所组成的，这里我们看一下实例:
+
+```xml
+<?xml version="1.0" encoding="GBK" ?>
+<students>
+    <student id="1001">
+        <name>Rongxin Yang</name>
+        <class>19</class>
+        <grade>481</grade>
+    </student>
+    <student id="1002">
+        <name>Tao Xueting</name>
+        <class>19</class>
+        <grade>521</grade>
+    </student>
+    <student id="1003">
+        <name>Tian Jiahui</name>
+        <class>19</class>
+        <grade>485</grade>
+    </student>
+</students>
+```
+
+像这种有所排版的xml文件，每两个标签之间都是默认存在一个#text空标签的:
+
+```xml
+<?xml version="1.0" encoding="GBK" ?>
+#text
+<students>
+#text
+    <student id="1001">
+    #text
+        <name>Rongxin Yang</name>
+        #text
+        <class>19</class>
+        #text
+        <grade>481</grade>
+        #text
+    </student>
+    #text
+    <student id="1002">
+    #text
+        <name>Tao Xueting</name>
+        #text
+        <class>19</class>
+        #text
+        <grade>521</grade>
+        #text
+    </student>
+    #text
+    <student id="1003">
+    #text
+        <name>Tian Jiahui</name>
+        #text
+        <class>19</class>
+        #text
+        <grade>485</grade>
+        #text
+    </student>
+    #text
+</students>
+```
+
+这也就意味着当我们对于student元素进行遍历时，第一个元素不是 \<name> 而是 #text。但是如果是按照这种格式，则第一个元素又会是 \<name>:
+
+```xml
+<?xml version="1.0" encoding="GBK" ?>
+<students>
+    <student id="1001"><name>Rongxin Yang</name><class>19</class><grade>481</grade></student>
+   ...
+</students>
+```
+
+也就是说当没有格式的时候，这个#text不存在了，而当我们使用Transformer进行输出结果时，使用的格式便是这种没有格式的格式。但是需要注意的是，这个#text表示的只是空格元素，却不在意这个空格是由多少内容,像这种:
+
+```xml
+<student id="1001">
+
+        <name>Rongxin Yang</name>
+
+        <class>19</class>
+
+        <grade>481</grade>
+
+    </student>
+```
+
+其子元素长度依旧是7，与前面的无异。
+
+当我们获得的获取一个元素我们除了获取其子元素外还可以使用getTextContent获取其内部的文本元素，如当我们获取name元素的文本元素自会获得Rongxin Yang，而当我们获取student便会获得:
+
+```java
+
+        Rongxin Yang
+
+        19
+
+        481
+
+```
+
+如果我们需要得到其标签名，则可调用getName方法即可，使用getAttribute(attribute)来获取指定的attribute的值（这里Node需要向下转型为Element才可以调用）。如若我们需要创建一个元素则可以使用Document对象调用createElement(tagName)即可，其中tagName即为其元素名，此时将返回一个Element对象，此时我们可以使用setTextContent方法设置其内部的文本元素，使用setAttribute(attribute,value)来设置一个attrubute。然后我们便可以使用一个元素调用appendChild将这个新元素添加至该元素的之中了，如若我们需要删除则使用removeChild(child)即可，其中child为要删除的元素。但是这一切的增加删除和修改后，我们都需要使用Transformer对象进行保存，与Document对象类似，我们创建该转换器对象也需要使用工厂对象创建：
+
+```java
+ TransformerFactory factory=TransformerFactory.newDefaultInstance();
+        Transformer transformer=factory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING,"UTF-8");//设置编码格式
+        DOMSource source=new DOMSource(document);
+        StreamResult result=new StreamResult(new FileOutputStream(path));//path即为文件所需保存的位置
+        transformer.transform(source,result);
+```
+
+为了更加便捷的操作XML文件，我们还可以使用框架**dom4j**,它的使用需要被额外的导入。使用该框架，我们首先也需要创建一个Document对象，此时我们使用 SAXReader对象进行创建：
+
+```java
+        SAXReader reader=new SAXReader();
+        Document document= reader.read(new File(path));//path即为xml文件地址
+```
+
+这里我们一般首先使用getRootElement方法获取其根元素,而后对其进行遍历：
+
+```java
+ Element root= document.getRootElement();
+ for(Iterator iterator = root.elementIterator(); iterator.hasNext();){
+    //主要操作
+ }
+```
+
+彼时，该iterator便会遍历根元素下所有的子元素，此时不包括无意义的#text,当然我们亦可以使用elements()方法获取一个元素的所有子元素的一个集合(List)(依旧不包含#text)。而当我们需要获取一个元素内部的文本信息时可以使用getText()方法，获取元素标签名则使用getName()方法，获取元素的属性值则使用attributeValue(attribute)方法,使用getParent()以获取父元素，若当前元素为根元素，则父元素为null。当我们需要修改元素的数据可以分别使用setText和setAttribute(attribute,value)去改变文本值和属性值，这里我们同样需要对于xml文档进行保存:
+
+```xml
+            OutputFormat format=OutputFormat.createPrettyPrint();//为xml生成格式，以格式化后的xml文件进行保存
+            XMLWriter writer=new XMLWriter(new FileWriter(path),format);
+            writer.write(document);
+            writer.close();
+```
+
+当我们需要向一个元素增添一个新元素时，我们可以直接使用该元素对象调用createElement(element name)来创建一个名为方法参数的新element,此时该方法将返回一个element对象，我们可以对于这个方法调用setText或者setAttribute方法来设置其文本内容和属性值
+
+```java
+        String path="D:\\Sync\\WorkStation\\Java\\VSCode\\Elegance\\src\\XMLMain\\alpha.xml";
+        SAXReader reader=new SAXReader();
+        document= reader.read(path);
+        Element root= document.getRootElement();
+        Element child=root.addElement("name");
+        child.setText("Rongxin Yang");
+        saveXML(path);
+```
+
+除此之外我们还可以使用add(Node node)方法来添加元素，而使用remove(Node node)来删除元素
