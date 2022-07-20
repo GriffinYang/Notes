@@ -66,3 +66,15 @@ alter table table_name drop column_name;
 
 **删除数据表:**
 drop table [if exists];
+
+**插入数据**
+insert into table_name [field1,field2,...] values(value1,value2,...);
+**注:**当我们插入数据时，如果没有指定字段(省略字段名)，则默认会按照表中的字段的顺序将这些values插入所有字段，如果指定了字段，则可以仅插入指定的字段。需要注意的是，我们插入的值与字段的类型和范围需要匹配。除此之外，我们的datetime类型的数据应遵循格式：YYYY-MM-DD HH:MM:SS，且置于字符串之中。
+
+**更新数据**
+update table_name set field1=value1,field2=value2,... where condition;
+
+**删除数据**
+1.delete from table_name where condition; 使用该种方法删除表，并不会重置计数器，这也就意味着新加入的数据的自增值将以删除前的计数器继续进行计算，而且使用该种方法删除的数据是可以被回复的
+
+2.truncate table table_name; 使用该种方法删除数据是用于完全删除该表中的所有数据并会重置计数器，其计数器会被重置，且数据不可被恢复
