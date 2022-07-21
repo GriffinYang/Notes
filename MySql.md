@@ -78,3 +78,97 @@ update table_name set field1=value1,field2=value2,... where condition;
 1.delete from table_name where condition; 使用该种方法删除表，并不会重置计数器，这也就意味着新加入的数据的自增值将以删除前的计数器继续进行计算，而且使用该种方法删除的数据是可以被回复的
 
 2.truncate table table_name; 使用该种方法删除数据是用于完全删除该表中的所有数据并会重置计数器，其计数器会被重置，且数据不可被恢复
+
+## 查询数据
+
+基本语法: select fields[*(代表所有字段)] from table_name [where conditions]；
+
+### 特殊的Conditions
+
+#### 取反:在条件中的字段名前使用not关键字对于条件取反->
+
+```sql
+select * from table_name where not fieldName =value <===> select * from table_name where not fieldName =value
+```
+
+#### is null:当我们想选取某个字段为空时的记录->
+
+```sql
+select * from table_name where fieldName is null 
+#取反 ->
+select * from table_name where fieldName is not null <===> select * from table_name where not fieldName is null
+```
+
+#### 选取区间:选取字段值在指定区间内的记录
+
+```sql
+select * from table_name where fieldName between value1 and value2(包含value1和value2)
+#取反 ->
+select * from table_name where not fieldName between value1 and value2
+```
+
+#### 选取包含值:选取字段值包含指定值的记录
+
+```sql
+select * from table_name where fieldName in (value1,value2,...)
+#取反 ->
+select * from table_name where not fieldName in (value1,value2,...)
+```
+
+#### 模糊查询:通过_和%来模糊查询字段值,其中'_'代表任意一个字符，'%'代表任意多个字符
+
+```sql
+select * from table_name where field_name like 'a%' #查询指定字段名以a开头的记录
+select * from table_name where field_name like 'a_____' #查询指定字段名以a开头且由五个字符组成的的记录 
+```
+
+#### 唯一值查询:使用distinct关键字可以选取唯一的记录，此关键字同一个字段相同的值只会出现一次(此时一般只查询这一个字段)
+
+```sql
+select distinct field_name from table_name
+```
+
+#### 运算新列：我们对于指定的两个字段进行计算继而获得一个新列，该新列可以通过关键字as进行命名(as可以省略)
+
+```sql
+select *,field_name1 operator field_name2 ... as new_field_name from table_name 
+```
+
+**注:** *在mysql中加号不可以作为字符串的连接符，如需连接多个字符串可以调用方法concat(str1,str2...):*
+
+```sql
+ select concat(ifnull(field_name1,''),'->',ifnull(field_name2,'')) as new_field_name from table_name;
+```
+
+#### ifnull(fieldName,replacement)函数:由于在mysql中一个null值加上任意值都会导致结果为null，所以为了避免这一情况我们使用isnull方法将指定值为null时以指定值替。参数含义:如果fieldName为空，则返回replacement，否则返回fieldName
+
+## 排序查询：当我们查询到数据后(所以如果由where条件时，它需要在条件之后)可以使用order by 对于记录进行排序，其中asc为升序(默认选项)，desc为降序
+
+```sql
+select * from table_name order by field_name1 asc[,field_name2 asc/desc...];
+select * from table_name order by field_name2 desc[,field_name2 desc/asc...];
+```
+
+## 聚合函数
+
+使用该函数我们可以进行聚合查询，其中函数的含义如下：
+
+count(filed_name):统计该字段不为空的记录的数量，如果是\*则统计所有输出的记录的数量
+
+```sql
+select count(*) as totalCount from table_name;
+```
+
+max(filed_name)和min(filed_name)分别获取指定字段的最值，一般用以比较数字型，字符串型会比较字母顺序
+
+```sql
+select max(field_name) as field_max from table_name;
+```
+
+avg(filed_name) 获取字段的平均值
+
+```sql
+select avg(field_name) as field_average from table_name;
+```
+
+此时我们依旧可以使用as对其进行命名:
