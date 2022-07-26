@@ -124,3 +124,28 @@ World
 ```
 
 因为此时我们的参数是在命令行中的所以这个参数便称之为命令行参数
+
+## 初始化代码块
+
+在Java类创建对象时，类的初始化代码块会被执行，这个代码块可以用来初始化对象的属性，如：
+
+```java
+class Employee{
+    private static int nextId;
+    private String name;
+    private double salary,
+    private int id;
+
+    //该代码块在该类创建对象时被执行，无论该对象是使用哪一个构造其创建的对象
+    {
+        id=nextId;
+        nextId++;
+    }
+
+    public Employee(String name, double salary){
+        this.name=name;
+        this.salary=salary;
+    }
+    ...
+}
+```

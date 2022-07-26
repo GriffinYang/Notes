@@ -171,4 +171,113 @@ avg(filed_name) 获取字段的平均值
 select avg(field_name) as field_average from table_name;
 ```
 
-此时我们依旧可以使用as对其进行命名:
+## 查询语句的嵌套及多值赋值
+
+```sql
+select fieldName-1,fieldName-2,fieldName-3 from table_1,table_2 where (fieldName-1,fieldName-2) = (select fieldName-1,fieldName-2 from table_3 where fieldName-4 = (select max(fieldName-14) from table-3));
+```
+
+## GROUP BY 分组查询:该语句用以将查询后的数据依据某一字段条件进行分组
+
+```sql
+ select filed_name1 as new_name1,count(field_name2) new_name2 from table_name where condition group by field_name1;
+```
+
+## HAVING 分组查询条件:该语句用以指定分组后的数据的查询条件,不同于where，该语句是在我们进行分组后所进行的筛选，其余where是相反的
+
+```sql
+ select filed_name1 as new_name1,count(field_name2) new_name2 from table_name where condition group by field_name1 having condition;
+```
+
+## limit startIndex,length:该语句用以指定查询结果的起始位置和长度从而选取指定范围内的数据
+
+```sql
+ select * from table_name limit startIndex,length;
+```
+
+## 一般正常的sql查询语句应遵循的书写顺序为 select –> from-> where-> group by-> having-> order by->limit
+
+## mySql的约束
+
+**主键约束(primary key)**:该约束的特点保证了数据的唯一性，如果一个表中有多个主键，则必须要求每个主键都是唯一的
+
+**唯一约束(unique)**:当字段的约束为唯一时，该字段的值必须是唯一的，如果该字段的值已经存在，则插入失败
+
+**自增约束(auto_increment)**:该约束的特点是指定字段的值自动增加，每次插入数据时，该字段的值会自动增加，前文已有所介绍
+
+**外键约束(foreign key)**:
+
+1.我们在创建所有字段后可以使用语句 constraint forign_key_name foreign key (foreign_key_field_name) references another_table(refered_field_name[primary key]);
+
+2.或者创建表后使用alter table table_name add constraint foreign_key_name foreign key (foreign_key_field_name) references another_table(refered_field_name[primary key]);
+
+**注:** 当我们使用了外键约束后，那么该表中的 foreign_key_field_name 字段便成为了外键，此时它值必须**存在于**所引用的父表中的refered_field_name,此外它们的**类型必须保持一致**。这个被引用的字段是被引用表的一个主键。
+
+## 多表查询
+
+### 合并结果集 (union,union all)
+
+#### union：将两个查询出的结果合并成一个结果集，其中相同项会被合并， 而union all则会保留两个结果集中的所有项
+
+```sql
+select * from table_name1 union select * from table_name2;
+select * from table_name1 union all select * from table_name2;
+```
+
+但是需要注意的是此时两张表需要保证被合并的两个结果的列数和列类型是一致的。不过合并结果集使用不多。
+
+### 连接查询
+
+所谓连接查询就是把指定的若干表中的若干字段同时显示在同一个表中，这样就可以把多张表的数据合并成一张表。
+
+```sql
+select * from table_name1,table_name2...;  #此时两(n)张表中的所有数据全部被合并成一张表
+select * from table_name1,table_name2... where conditions;  #此时两(n)张表中的符合条件全部记录的全部数据被合并成一张表
+select table_name1.field_name1,table_name1.field_name2,...table_name2.field_name1,table_name2.field_name2... from table_name1,table_name2... where conditions;  #此时两(n)张表中的符合条件的记录中的指定字段被合并成一张表
+select t1.field_name1,t1.field_name2,...t2.field_name1,t2.field_name2... from t2.field_name1 (as) t1,field_name2 (as) t2... where conditions;  #与前者是同样的操作，只是为表格添加了别名以方便书写
+```
+
+## 内连接
+
+前面的连接查询实际上就是内连接，但是不是标准的sql语句，是mySql的特有语法，对于标准的sql语法来说应当写作:
+
+```sql
+select * from table_name1 inner join table_name2 on conditions; #注意这里的conditions的连接词为on而不再是where了
+```
+
+## 外连接：事实上我们注意到我们实现内连接是建立在两张表的公用数据之上的，这里经常为主键和外键，而假设含主键的这张表存在一个数据，它的主键在另一张表中是不存在的，因为我们知道我们的外键是基于所引用的表的主键的，当该主键不存在时，我们无法创建这个外键，但是拖过存在这个主键去不意味着我们就一定存在这个外键，会因此，有可能一条数据在含主键的这张表存在，但是在含外键的这张表上不存在相应的外键与之对应，则该数据同样无法显示，如
+
+```sql
+select * from table_name1 inner join table_name2 on conditions
+此时若table1的数据为：
+id student_name age
+01 Rongxin   21
+02 Griffin   22
+03 Jack      21
+而table2的数据为：
+id score
+01 95
+02 98
+```
+
+此时所选取的结果中将不含03这个学生的信息，因为table2中没有03这个学生的信息，所以我们可以使用外连接来解决这个问题：
+
+### 左外连接:使用该连接我们可以将以左翼的表格为主体，此时即使table2中没有该段数据，该段数据将依旧会被展示，如前面的两个表，其结果将不再跳过03该段数据，至于此时table2位置的数据因为为空，则全部字段都将显示为空值
+
+```sql
+select * from table_name1 left join table_name2 on conditions;
+```
+
+### 右外连接:该连接与前者左连接功能是一致的，只是此时讲以右翼的表格作为主表
+
+```sql
+select * from table_name1 right join table_name2 on conditions;
+```
+
+### 自然连接:使用该连接，我们无需给出两张表的主外键关系等式，因为其会对两张表进行自动查询。如两张连接的表中名称和类型完全一致的列作为条件，例如t1和t2表都存在field1列，并且类型一致，所以会被自然连接找到
+
+```sql
+select * from table_name1 natural join table_name2
+select * from table_name1 natural left join table_name2
+select * from table_name1 natural right join table_name2
+```
