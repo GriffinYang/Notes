@@ -281,3 +281,9 @@ select * from table_name1 natural join table_name2
 select * from table_name1 natural left join table_name2
 select * from table_name1 natural right join table_name2
 ```
+
+### 数据库的导出和恢复
+
+我们可以在命令行下输入mysqldump -uroot -ppassword database_name > backup.sql来导出数据库，然后在命令行下输入mysql -uroot -ppassword database_name < backup.sql来导入数据库，这样就可以完全恢复数据库了，不过需要注意的是，导出的sql并不包含创建数据库的操作，所在我们导入之前需要提前创建出一个数据库
+
+亦或者我们可以在msql内部进行该导入操作:source path\backup.sql
