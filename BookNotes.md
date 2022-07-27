@@ -149,3 +149,66 @@ class Employee{
     ...
 }
 ```
+
+## HashCode
+
+散列码（hash code）是由对象导出的一个整型值。散列码是没有规律的。如果x和y是两个不同的对象，x.hashCode( )与y.hashCode( )基本上不会相同。
+
+**多重参数:**当我们希望一个方法可以同时接受n个参数可以使用...来代替多余的所有参数,这里的省略号...是Java代码的一部分，它表明这个方法可以接收任意数量的对象:
+
+```java
+public void fn(Objecr... params)  //此时内部的参数可以是n个
+```
+
+**枚举:**在枚举中我们除了设置其枚举值以外还可以设置每个枚举值的缩写，但是我们需要首先创建一个枚举对象(所有的枚举类型都是Enum类的子类。它们继承了这个类的许多方法。其中最有用的一个是toString，这个方法能够返回枚举常量名),创建对象我们首先需要调用Enum的静态方法以获取一个枚举值的实例,如：
+
+```java
+enum Size
+{
+   SMALL("S"), MEDIUM("M"), LARGE("L"), EXTRA_LARGE("XL");  //这里的SMALL，MEDIUM，LARGE，EXTRA_LARGE是枚举常量的名称。注意与常规的类不同，枚举的构造方法的实例是直接定义在枚举内部的
+
+   Size(String abbreviation) { this.abbreviation = abbreviation; } //这里也就相当于枚举的一个'构造方法' 
+   public String getAbbreviation() { return abbreviation; }  //获取该内部变量的方法
+
+   private String abbreviation;  //相当于一个全局变量
+}
+
+```
+
+**注:**比较两个枚举类型的值时，永远不需要调用equals，而直接使用“= =”就可以了。
+
+1.toString方法:使用 "枚举名.枚举值.toString()" 来获取枚举值的字符串表示->
+
+```java
+Size.SMALL.toString(); //返回SMALL
+```
+
+2.values方法:使用 "枚举名.values()" 来获取枚举值的数组->
+
+```java
+Size[] values = Size.values(); //返回包含元素Size.SMALL, Size.MEDIUM, Size.LARGE和Size.EXTRA_LARGE的数组。
+```
+
+3.toString的逆方法是静态方法valueOf:使用 "枚举名.valueOf(枚举值的字符串表示)" 来获取枚举值的实例->
+
+```java
+Size s=Enum.valueOf(Size.class,"SMALL");//返回一个enum的实例对象，我们使用s可以返回SMALL,同时我们也可以使用size.getAbbreviation()以获得S。这里我们并未在创建对象时调用构造方法，因为我们在枚举值中已经提前声明了，因此此时我们使用valueOF便会自动调用我们在枚举值定义的构造实例
+```
+
+4.ordinal:返回enum声明中枚举常量的位置，位置从0开始计数。例如：Size.MEDIUM. ordinal()返回1。
+
+5.compareTo(E enum):如果枚举常量出现在other之前，则返回一个负值；如果this==other，则返回0；否则，返回正值。枚举常量的出现次序在enum声明中给出。
+
+```java
+      Size s1 = Enum.valueOf(Size.class, "SMALL");
+      Size s2 = Enum.valueOf(Size.class, "SMALL");
+      Size m = Enum.valueOf(Size.class, "MEDIUM");
+      System.out.println(s1.compareTo(s2));
+      System.out.println(m.compareTo(s1));
+      System.out.println(s1.compareTo(m));
+
+//结果
+0
+1
+-1
+```

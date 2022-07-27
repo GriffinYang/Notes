@@ -287,3 +287,7 @@ select * from table_name1 natural right join table_name2
 我们可以在命令行下输入mysqldump -uroot -ppassword database_name > backup.sql来导出数据库，然后在命令行下输入mysql -uroot -ppassword database_name < backup.sql来导入数据库，这样就可以完全恢复数据库了，不过需要注意的是，导出的sql并不包含创建数据库的操作，所在我们导入之前需要提前创建出一个数据库
 
 亦或者我们可以在msql内部进行该导入操作:source path\backup.sql
+
+## 事务(transaction)
+
+事务即使一段命令，而mysql默认是自动提交的，因此我们的任意一条指令都是自动提交的事务，然而如果我们使用的时InnoDB或者BDB引擎的表格，则也可以实现批量提交的事务，也就是在多条指令执行完成后统一使用commit命令提交事务，如果我们使用的是MyISAM引擎的表格，则不支持该操作。在使用事务之前我们首先需要使用set autocommit=0以关闭事物的自动提交，而后使用start transaction开始事务，随后我们便可以使用sql语句进行操作，如果所有事务都执行成功(此时事务并未真正执行)，我们可以使用commit提交，此时所有事务将同时执行完成;如果其中有一条语局执行出错则应该使用rollback进行回滚，以回到初始状态。注意事务执行完成后应当使用set autocommit=1以开启事务的自动提交。
