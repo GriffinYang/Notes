@@ -212,3 +212,47 @@ Size s=Enum.valueOf(Size.class,"SMALL");//返回一个enum的实例对象，我�
 1
 -1
 ```
+
+## class类
+
+在程序运行期间，Java运行时系统始终为所有的对象维护一个被称为运行时的类型标识。这个信息跟踪着每个对象所属的类。虚拟机利用运行时类型信息选择相应的方法执行。而它们的容器就是一个CLass类。我们可以通过一个实例对象调用getClass方法来获取这个类的实例。
+
+```java
+Employee e;
+...
+Class cl=e.getClass();
+System.out.println(cl.getName()+" "+e.getName());
+/*结果: Employee[cl.getName()] Rongxin Yang[e.getName()]*/
+```
+
+如果类在一个包里，包的名字也作为类名的一部分：
+
+```java
+Random generator=new Random();
+Class cl=generator.getClass();
+String name=cl.getName();
+/*name此时等于:java.util.Random*/
+```
+
+初次之外我们还可以使用类名来创建生成一个Class对象，此时调用静态方法'forName(className)'->
+
+```java
+/*
+如果类名保存在字符串中，并可在运行中改变，就可以使用这个方法。当然，这个方法只有在className是类名或接口名时才能够执行。否则，forName方法将抛出一个checked exception（已检查异常）。无论何时使用这个方法，都应该提供一个异常处理器(exception handler)。
+*/
+String name="java.util.Random";
+Class cl=Class.forName(name);
+```
+
+使用场景:在启动时，包含main方法的类被加载。它会加载所有需要的类。这些被加载的类又要加载它们需要的类，以此类推。对于一个大型的应用程序来说，这将会消耗很多时间，用户会因此感到不耐烦。可以使用下面这个技巧给用户一种启动速度比较快的幻觉。不过，要确保包含main方法的类没有显式地引用其他的类。首先，显示一个启动画面；<u>然后，通过调用Class.forName手工地加载其他的类</u>。
+
+**注:** 一个Class对象实际上表示的是一个类型，而这个类型未必一定是一种类。例如，int不是类，但int.class是一个Class类型的对象注释：Class类实际上是一个泛型类。例如，Employee.class的类型是Class\<Employee>
+
+除此之外，当我们获得了一个Class对象以后可以调用newInstance()创建一个该类型的实例对象:
+
+```java
+String name="java.util.Random";
+Class cl= null;
+cl = Class.forName(name);
+Random r= (Random) cl.newInstance(); //返回值是一个Object对象,初次之外需要注意的是该方法目前已被弃用，而且该方法只可以使用无参的构造函数创建一个对象，如果这个类不存在无参构造函数则会抛出一个异常。
+```
