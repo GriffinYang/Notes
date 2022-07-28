@@ -256,3 +256,75 @@ Class cl= null;
 cl = Class.forName(name);
 Random r= (Random) cl.newInstance(); //返回值是一个Object对象,初次之外需要注意的是该方法目前已被弃用，而且该方法只可以使用无参的构造函数创建一个对象，如果这个类不存在无参构造函数则会抛出一个异常。
 ```
+
+## 反射机制
+
+反射库（reflection library）提供了一个非常丰富且精心设计的工具集，以便编写能够动态操纵Java代码的程序。这项功能被大量地应用于JavaBeans中，它是Java组件的体系结构。使用反射，Java可以支持Visual Basic用户习惯使用的工具。特别是在设计或运行中添加新类时，能够快速地应用开发工具动态地查询新添加类的能力。能够分析类能力的程序称为反射（reflective）。反射机制的功能极其强大，反射机制可以用来：
+
+● 在运行时分析类的能力。
+
+● 在运行时查看对象，例如，编写一个toString方法供所有类使用。
+
+● 实现通用的数组操作代码。
+
+● 利用Method对象，这个对象很像C++中的函数指针。
+
+**反射机制对于类的分析**:
+
+我们的java.lang.reflect包即为反射类reflect的包，其提供了Field,Method,Constructor三个类分别用以描述类的域，方法和构造器。这些域，方法和构造器又都包含了一个getModifiers方法，这个方法返回一个int值，表示类的修饰符。之后我们可以调用Modifier.toString()将其转为字符串类型。除了修饰符以外，它们也都包含了自己的名称，这些名字则都可以调用getName()方法获得。对于域来说，它还含有一个数据类型，这个类型则可以使用getType()[返回一个Class类型]方法进行获得。对于方法来说，它们还有一个返回值类型(包括了void)，其通过getReturnType()[返回一个Class]方法进行获得。对于构造器来说，它们还有一个参数类型，其通过getParameterTypes()[返回一个参数列表类的数组]方法进行获得，该方法对于构造方法同样适用。
+
+**域**->Field[] fields = cl.getDeclaredFields();[cl表示一个class类型的对象]
+
+getModifiers()方法返回一个int值，表示域的(所有)修饰符。
+
+getType()方法返回一个Class类型，表示域的数据类型。
+
+getName()方法返回一个String类型，表示域的名称。
+
+**构造方法**->Constructor[] constructors = cl.getDeclaredConstructors();[cl表示一个class类型的对象]
+
+getModifiers()方法返回一个int值，表示构造器(所有)的修饰符。
+
+getParameterTypes()方法返回一个参数列表类的数组，表示构造方法的参数类型。
+
+getName()方法返回一个String类型，表示构造方法的名称。
+
+**方法**-> Method[] methods = cl.getDeclaredMethods();[cl表示一个class类型的对象]
+
+getModifiers()方法返回一个int值，表示方法(所有)的修饰符。
+
+getReturnType()方法返回一个Class类型，表示方法的返回类型。
+
+getParameterTypes()方法返回一个参数列表类的数组，表示方法的参数类型。
+
+getName()方法返回一个String类型，表示方法的名称。
+
+**对于域和方法来说我们还可以做一些更好玩的事情**:
+
+**域** ->我们可以通过Class的一个实例对象调用getDeclaredField(fieldName),此时我们将获得该类的一个指定的域，返回这是一个Field对象。如果我们此时再调用该Field对象的get(instance)(instance为该类型的一个实例对象)方法，则会返回该instance对象的该域的值的一个对象(返回值是一个Object,但是如果输出它将会获得一个该域的字符串结果):
+
+```java
+Employee bob = new Employee("Bob Grandson", 50000, 1989, 10, 1);
+Class cl=bob.getClass();
+Field field = cl.getDeclaredField("name");
+field.setAccessible(true);  //因为name是一个私有域，所以我们首先要开放访问权限才可以进行下一步的get操作
+Object obj1=field.get(bob);
+System.out.println(obj1);
+System.out.println();
+//结果:Bob Grandson
+```
+
+**注**:get方法有一个需要解决的问题。name域是一个String，因此把它作为Object返回没有什么问题。但是，假定我们想要查看salary域。它属于double类型，而Java中数值类型不是对象。要想解决这个问题，可以使用Field类中的getDouble方法，也可以调用get方法，此时，反射机制将会自动地将这个域值打包到相应的对象包装器中，这里将打包成Double。
+
+**方法** ->与前者类似，我们可以调用getDeclareMethod(methodName(字符串类型),paramTypes(Class类型)...)来获取指定的方法，返回的是一个Method对象。如果我们想调用该方法，则需要调用该Method对象的invoke(instance,args...)方法，其中instance为该类型的一个实例对象，args为该方法的参数列表。
+
+**注:** 我们需要获得一个基本数据类型的Class可以使用"基本数据类型名.class"
+
+```java
+Employee bob = new Employee("Bob Grandson", 50000, 1989, 10, 1);
+Class cl=bob.getClass();
+Method method=cl.getMethod("raiseSalary",double.class);
+method.invoke(bob,20.0);
+System.out.println(bob.getSalary());
+//结果:60000.0
+```
