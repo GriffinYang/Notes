@@ -906,8 +906,6 @@ FileOutputStream(String filePath)：使用指定文件的路径直接构造一�
 
 #### FileOutputStream类的常用方法是
 
-write(int b)：写出一个字节。
-
 write(byte[] b)：写出数组b中所有的字节数据至指定的文件之中。
 
 write(byte[] b,int off,int len):从数组b中off开始指定的长度len的字节数据至指定的文件之中。

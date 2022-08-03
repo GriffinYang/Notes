@@ -14,7 +14,7 @@ It will appear in the file that the extend name is .php,but note that php can no
 
 ## variable
 
-In php, the variable starts with '$', si=o it's format is like this:
+In php, the variable starts with '$', so it's format is like this:
 
 ```php
 $x= 'Hello World!';
@@ -49,11 +49,7 @@ We will always get the same result of 1, but after we asign this $a to a static 
 #### echo and print
 
 In php, there are two different ways to output the data to the screen:
-the echo and print. Their deference are that print has a return value of 1, so it can be used in expressions and echo can take not only one parameter(rare use). And the html makeup is permited in both of two methods
-
-```php
-
-```
+the echo and print. Their deference is that print has a return value of 1, so it can be used in expressions and echo can take not only one parameter(rare use). And the html makeup is permited in both of two methods
 
 #### PHP array
 
@@ -69,7 +65,7 @@ In php we use class as a template of an object and take the object as an instanc
 
 ### String's methods
 
-#### strlen(String):
+#### strlen(String)
 
 We use it to get the length of the string
 
@@ -99,7 +95,7 @@ And there are three constants in integer:<br>
 2.PHP_INT_MIN - The smallest integer supported<br>
 3.PHP_INT_SIZE - The size of an integer in bytes<br>
 
-#### PHP has the following functions to check if the type of a variable is integer:
+#### PHP has the following functions to check if the type of a variable is integer
 
 is_int(int)<br>
 is_integer(int) - alias of is_int()<br>
@@ -107,7 +103,6 @@ is_long(int) - alias of is_int()<br>
 
 #### PHP has the following functions to check if the type of a variable
 
-is float:<br>
 is_float()<br>
 is_double() - alias of is_float()<br>
 
@@ -118,7 +113,7 @@ PHP has the following functions to check if a numeric value is finite or infinit
 is_finite()<br>
 is_infinite()<br>
 
-##### Note:var_dump() function returns the data type and value:
+##### Note:var_dump() function returns the data type and value
 
 #### PHP NaN
 
@@ -130,7 +125,7 @@ is_nan()
 
 The PHP is_numeric() function can be used to find whether a variable is numeric. The function returns true if the variable is a number or a numeric string, false otherwise.
 
-##### Note: From PHP 7.0: The is_numeric() function will return FALSE for numeric strings in hexadecimal form (e.g. 0xf4c3b00c), as they are no longer considered as numeric strings.
+##### Note: From PHP 7.0: The is_numeric() function will return FALSE for numeric strings in hexadecimal form (e.g. 0xf4c3b00c), as they are no longer considered as numeric strings
 
 #### PHP Math
 
@@ -159,7 +154,7 @@ To create a constant, use the define() function:
 define("BESTFRI","TAO XUETING",false);
 ```
 
-#### In PHP7, you can create an Array constant using the define() function:
+#### In PHP7, you can create an Array constant using the define() function
 
 ```php
 <?php
@@ -171,7 +166,7 @@ define("cars", [
 ?>
 ```
 
-#### PHP divides the operators in the following groups:
+#### PHP divides the operators in the following groups
 
 1.Arithmetic operators<br>
 2.Assignment operators<br>
@@ -334,7 +329,7 @@ The PHP comparison operators are used to compare two values (number or string):
 <td><=></td>
 <td>Spaceship</td>
 <td>$x<=>$y</td>
-<td>Returns an integer less than, equal to, or greater than zero, depending on if $x is less than, equal to, or greater than $y. Introduced in PHP 7.	
+<td>Returns an integer less than, equal to, or greater than zero, depending on if $x is less than, equal to, or greater than $y. Introduced in PHP 7.
 </td>
 </tr>
 </table>
@@ -548,7 +543,7 @@ Very often when you write code, you want to perform different actions for differ
 
 ### SWITCH in PHP
 
-#### The switch statement is used to perform different actions based on different conditions.
+#### The switch statement is used to perform different actions based on different conditions
 
 ```php
 switch (n) {
@@ -659,7 +654,7 @@ echo addNumbers(1.2, 5.2);
 
 #### Passing Arguments by Reference
 
-In PHP, arguments are usually passed by value, which means that a copy of the value is used in the function and the variable that was passed into the function cannot be changed.
+In PHP, arguments are usually passed by value, which means that a copy of the value is used in the function and the variable that was passed into the function won't be changed.
 
 When a function argument is passed by reference, changes to the argument also change the variable that was passed in. To turn a function argument into a reference, the & operator is used:
 
@@ -749,7 +744,7 @@ krsort() - sort associative arrays in descending order, according to the key<br>
 
 ## PHP Superglobal
 
-### Super global variables are built-in variables that are always available in all scopes.
+### Super global variables are built-in variables that are always available in all scopes
 
 #### PHP $GLOBALS
 
@@ -817,7 +812,7 @@ Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0
 </tr>
 <tr>
 <td>$_SERVER['GATEWAY_INTERFACE']</td>
-<td>Returns the version of the Common Gateway Interface (CGI) the server is 
+<td>Returns the version of the Common Gateway Interface (CGI) the server is
 using</td>
 </tr>
 <tr>
@@ -854,7 +849,7 @@ using</td>
 </tr>
 <tr>
 <td>$_SERVER['HTTP_ACCEPT_CHARSET']</td>
-<td>Returns the Accept_Charset header from the current request (such as 
+<td>Returns the Accept_Charset header from the current request (such as
 utf-8,ISO-8859-1)</td>
 </tr>
 <tr>
@@ -863,7 +858,7 @@ utf-8,ISO-8859-1)</td>
 </tr>
 <tr>
 <td>$_SERVER['HTTP_REFERER']</td>
-<td>Returns the complete URL of the current page (not reliable because not all 
+<td>Returns the complete URL of the current page (not reliable because not all
 user-agents support it)</td>
 </tr>
 <tr>
@@ -880,7 +875,7 @@ user-agents support it)</td>
 </tr>
 <tr>
 <td>$_SERVER['REMOTE_PORT']</td>
-<td>Returns the port being used on the user's machine to communicate with the 
+<td>Returns the port being used on the user's machine to communicate with the
 web server</td>
 </tr>
 <tr>
@@ -889,18 +884,18 @@ web server</td>
 </tr>
 <tr>
 <td>$_SERVER['SERVER_ADMIN']</td>
-<td>Returns the value given to the SERVER_ADMIN directive in the web server 
-configuration file (if your script runs on a virtual host, it will be the value 
+<td>Returns the value given to the SERVER_ADMIN directive in the web server
+configuration file (if your script runs on a virtual host, it will be the value
 defined for that virtual host) (such as someone@w3schools.com)</td>
 </tr>
 <tr>
 <td>$_SERVER['SERVER_PORT']</td>
-<td>Returns the port on the server machine being used by the web server for 
+<td>Returns the port on the server machine being used by the web server for
 communication (such as 80)</td>
 </tr>
 <tr>
 <td>$_SERVER['SERVER_SIGNATURE']</td>
-<td>Returns the server version and virtual host name which are added to 
+<td>Returns the server version and virtual host name which are added to
 server-generated pages</td>
 </tr>
 <tr>
@@ -948,6 +943,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </html>
 
+```
+
+#### Get the data from radio buttons and checkbox buttons
+
+We we want to get the data from the radio buttons, that can be easy , we need just set a value attribute in that button, we will would get the selected value of that radio button, cause the radio button has the only value. But the checkbox button coould be given multiple values, so we need set that checkbox button as an array that their values will be stored in. The we could get an array in the backend:
+
+```php
+#front-end:
+Hobby:<input type="checkbox" name="hobby[]" id="Climbing" value="climbing"/>Climbing
+      <input type="checkbox" name="hobby[]" id="Travelling" value="travelling"/>Travelling
+      <input type="checkbox" name="hobby[]" id="Reading" value="reading"/>Reading<br />
+#back-end:
+ $hobby=$_POST["hobby"];#This $hobby will get an arrray that stores all the selected values of the checkbox button.
+ #Iterate all the selected values of the checkbox button:
+ if(count($hobby)!=null) 
+        for ($i=0; $i < count($hobby); $i++) { 
+            echo $hobby[$i];
+            if($i!=count($hobby)-1)
+            echo ",";
+        }
 ```
 
 #### PHP $\_POST
@@ -1085,7 +1100,7 @@ The delimiter can be any character that is not a letter, number, backslash or sp
 </table>
 
 <table>
-<th>Matacharacter</th>
+<th>Metacharacter</th>
 <th>Description</th>
 <tr>
 <td>|</td>
@@ -1093,7 +1108,7 @@ The delimiter can be any character that is not a letter, number, backslash or sp
 </tr>
 <tr>
 <td>.</td>
-<td>Find a match for any one of the patterns separated by | as in: cat|dog|fish</td>
+<td>Find just one instance of any character</td>
 </tr>
 <tr>
 <td>^</td>
@@ -1281,7 +1296,7 @@ echo $gender;
 
 Beacause when you are using a htmlspecialchars, all the <>will become &lt and &gt, so the script won't be executed.
 
-##### Note:When we are using $\_SERVER["PHP_SELF"], we need add a htmlspecialchars too in order to protect the submit.
+##### Note:When we are using $\_SERVER["PHP_SELF"], we need add a htmlspecialchars too in order to protect the submit
 
 And when we want to set the Required attribute, we could do something like this:
 
@@ -1586,11 +1601,11 @@ fclose($myfile);
 ?>
 ```
 
-#### PHP Read Single Character - fgetc():
+#### PHP Read Single Character - fgetc()
 
 With this function we could read a single character of the file;
 
-#### File create and write in PHP:
+#### File create and write in PHP
 
 When we are using fopen(), if there is no such file, it will be created. So we create a new file with the function fopen() too.
 But when we need to write this new file, we need to use method:
@@ -1601,7 +1616,7 @@ fwrite(file,content).
 When we finished writing a new file. If we start writing it again, besides the fopen()'s option is "w", the initial data will all be overwrited, we call it Overwriting. And when you choose the option
 "a", the initial data will be preserved.
 
-#### File Upload:
+#### File Upload
 
 Beacause the file upload is a little complicated, so we firstly showcase a example here:
 
@@ -1682,7 +1697,7 @@ if ($uploadOk == 0) {
 
 A cookie is often used to identify a user. A cookie is a small file that the server embeds on the user's computer. Each time the same computer requests a page with a browser, it will send the cookie too. With PHP, you can both create and retrieve cookie values.
 
-#### setcookie(name, value, expire, path("'/'means"), domain, secure, httponly):
+#### setcookie(name, value, expire, path("'/'means"), domain, secure, httponly)
 
 All the parameters above except for the name, the rest are optional.We could use the function isset() to find out if the cookie is set. Please note that set cookie should appear BEFORE the \<html> tag. And here's an example for cookie use:
 
@@ -1941,7 +1956,7 @@ First, we will look at the following two functions:
 json_encode()
 json_decode()
 
-#### PHP - json_encode():
+#### PHP - json_encode()
 
 The json_encode() function is used to encode a value to JSON format.
 
@@ -1953,7 +1968,7 @@ echo json_encode($age);
 ?>
 ```
 
-#### PHP - json_decode():
+#### PHP - json_decode()
 
 The json_decode() function is used to decode a JSON object into a PHP object or an associative array:
 
@@ -2344,7 +2359,7 @@ $strawberry->message(); // OK. message() is public and it calls intro() (which i
 
 Inherited methods can be overridden by redefining the methods (use the same name) in the child class.
 
-Look at the example below. The **construct() and intro() methods in the child class (Strawberry) will override the **construct() and intro() methods in the parent class (Fruit):
+Look at the example below. The **construct() and intro() methods in the child class (Strawberry) will override the**construct() and intro() methods in the parent class (Fruit):
 
 ```php
 <?php
@@ -3023,7 +3038,7 @@ mysqli_close($conn);
 ?>
 ```
 
-#### Note: The following PDO example create a database named "myDBPDO":
+#### Note: The following PDO example create a database named "myDBPDO"
 
 ```php
 //Example (PDO)
@@ -4377,7 +4392,7 @@ XML is easy to create. It looks a lot like HTML, except that you make up your ow
 
 If you want to learn more about XML, please visit our XML tutorial.
 
-#### XML Parser:
+#### XML Parser
 
 To read and update, create and manipulate an XML document, you will need an XML parser.
 
@@ -4386,7 +4401,7 @@ In PHP there are two major types of XML parsers:
 <li>Tree-Based Parsers
 <li>Event-Based Parsers
 
-#### Tree-Based Parsers:
+#### Tree-Based Parsers
 
 Tree-based parsers holds the entire document in Memory and transforms the XML document into a Tree structure. It analyzes the whole document, and provides access to the Tree elements (DOM).
 
@@ -4397,7 +4412,7 @@ Example of tree-based parsers:
 <li>SimpleXML
 <li>DOM
 
-#### Event-Based Parsers:
+#### Event-Based Parsers
 
 Event-based parsers do not hold the entire document in Memory, instead, they read in one node at a time and allow you to interact with in real time. Once you move onto the next node, the old one is thrown away.
 
@@ -4408,7 +4423,7 @@ Example of event-based parsers:
 <li>XMLReader
 <li>XML Expat Parser
 
-#### The SimpleXML Parser:
+#### The SimpleXML Parser
 
 SimpleXML is a <strong>tree-based parser</strong>.
 
@@ -4682,5 +4697,3 @@ body = Don't forget me this weekend!
 ```
 
 And we found: in the example above you see that there are empty text nodes between each element.When XML generates, it often contains white-spaces between the nodes. The XML DOM parser treats these as ordinary elements, and if you are not aware of them, they sometimes cause problems.
-
-
