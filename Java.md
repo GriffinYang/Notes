@@ -133,7 +133,7 @@ public class Test{
 
 **基本算数运算符：**
 
-“+”，“-”，“\_”，“/”，“%”，“++”，“--”
+“+”，“-”，“\*”，“/”，“%”，“++”，“--”
 
 **复合算术运算符：**
 
@@ -232,6 +232,21 @@ for(数据类型 标识符 of 对象数组){
 我们可以采用冒泡排序的方法：我们由第一位向后不断地进行比较，若后面的数据表当前位的数据大
 或者小的时候，我们将两者的位置进行调换，从而不断地保证第一位到倒数第二位可以保持升序或者
 降序的顺序进行排列
+
+```java
+//冒泡排序
+     int[] array={12,43,32,11,30,21,47};
+        for (int i = 0; i < array.length; i++){
+            for (int j = i; j < array.length; j++){
+                if(array[i]<array[j]){
+                    int temp=array[j];
+                    array[j] =array[i];
+                    array[i] = temp;
+                }
+            }
+
+        }
+```
 
 #### 数组的插值
 
@@ -345,7 +360,22 @@ this.子类属性2=子类参数2;
 
 当我们父类中的方法不足以满足子类需求的时候，我们便可以在子类中将父类中的同名方法进行重写，
 继而满足子类的需求，而重写方法需保证，子类中的同名方法标识符私有度不高于父类中的同名方法
-同时这两个方法的参数列表也需要完全对应
+同时这两个方法的参数列表也需要完全对应,注意重写方法切不可改变父类该方法的返回值：
+
+```java
+ class Parent{
+ public String name;
+ public int age;
+ public String print(String name,int age){
+    return "name:"+name+" age:"+age;
+ }
+ }
+class Child extends Parent{
+//     public void print(String name,int age){   //错误，不可改变父类方法的返回值
+//     System.out.println("name:"+name+" age:"+age);
+//     }
+}
+```
 
 ## 多态
 
@@ -356,7 +386,7 @@ this.子类属性2=子类参数2;
 #### 抽象类
 
 使用 abstract 修饰的类即为抽象类，抽象类可以含有抽象方法也可以含有常规方法，如果一个类想要拥有抽象方法就必须是抽象类。但是抽象
-类是无法吧实例化的，此外，如果一个类继承了一个抽象类，那么它必须实现这个抽象父类的所有抽象方法。
+类是无法被实例化的，此外，如果一个类继承了一个抽象类，那么它必须实现这个抽象父类的所有抽象方法。
 
 #### 抽象方法
 
@@ -390,7 +420,7 @@ this.子类属性2=子类参数2;
 
 ## 集合类
 
-集合类是一种数据结构，它可以存储多个元素，并且可以进行一些操作，比如添加、删除、查找、排序等。这里主要由三种常用的接口：List，Set，Map。其中前两者都是继承了 Collection 接口，而 Map 则与 Collection 接口继承了 Map 接口。这三者的区别如下：
+集合类是一种数据结构，它可以存储多个元素，并且可以进行一些操作，比如添加、删除、查找、排序等。这里主要由三种常用的接口：List，Set，Map。其中前两者都是继承了 Collection 接口，而Map自身就是主接口。这三者的区别如下：
 
 List 接口中实现类的内容是有序的，而 Set 接口中实现类的内容是无序的。而且 List 接口中实现类的内容是可以重复的，而 Set 接口中实现类的内容是不可以重复的。
 
@@ -546,13 +576,16 @@ Iterator<Student>it=students.iterator();
 
 ```java
 //增强for循环
+        Student stu1=new Student("Rongxin Yang",22);
+        Student stu2=new Student("Tao Xueting",21);
+        Student stu3=new Student("Xucc",20);
         Map mp1=new TreeMap();
         mp1.put("Rongxin Yang",stu1);
-        mp1.put("T-iky79",stu2);
+        mp1.put("TXT",stu2);
         mp1.put("Xucc",stu3);
         mp1.put("Griffin Yang",stu1);
 
-        Set<Map.Entry<String,String>>students1=mp1.entrySet();
+        Set<Map.Entry<String,Student>> students1=mp1.entrySet();
         System.out.println();
         System.out.println("Map1:");
         for (Map.Entry obj : students1) {
@@ -601,8 +634,6 @@ Person person = new Person("Rongxin Yang",22,Gender.Boy);
 
 Date(int year,int month,int date)，Date(int year,int month,int date,int hrs,int min,int sec)
 
-注意其中的年所☞的是自1900到当前时间点的时间长度，故我们若想得到当前的年份则需要额外加上1900才可以。其中常用的几个方法如下：
-
 getDate()：获取今天是一个月中的第几天
 
 getDay()：获得今天是星期几
@@ -634,6 +665,8 @@ Calendar cal = Calendar.getInstance();
  Calendar.get(Calendar.MONTH): 获得当前的月份，注意月份需要加一
 
  Calendar.get(Calendar.SECOND): 获得当前的秒数
+
+ Calendar.get(Calendar.YEAR)：获取当前的年份，如2022
 
 #### 直接获得当前具体时间
 
@@ -864,6 +897,16 @@ createNewFile()：创建一个文件，如果文件已经存在，则返回false
 
 createTempFile(String prefix,String suffix)：创建一个临时文件，其中prefix是文件的前缀，suffix是文件的后缀。
 
+```java
+    try {
+            File.createTempFile("TempFile","txt",new File("D:\\"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+// 所创建的文件名为 TempFile11777292627734293591txt类型为File
+```
+
 createTempFile(String prefix,String suffix,File directory)：创建一个临时文件，其中prefix是文件的前缀，suffix是文件的后缀，directory是文件的目录。
 
 delete(): 删除文件。
@@ -939,19 +982,19 @@ write(char[] cbuf||String str,int off,int len)
 但是毕竟前者这个字符流也还是一个字符一个字符的操作，由此为了更高效率的完成字符的读取操作等，我们还有一个BufferedReader和BufferedWriter类，它们的构造方法是：
 
 ```java
-BufferedReader(Reader in)
-BufferedWriter(Writer out)
+BufferedReader(new FileReader(new File))
+BufferedWriter(new FileReader(new File))
 ```
 
-与前者相比，我们的reader可以使用reandLine()方法一次读取一行的数据并将其存为一个字符串，此时我们再将这个返回的字符串转为字节数组，此时我们就可以使用write(int b)方法将数据写入文件了。此时我们的读写效率将会再次的到提高，当然这依旧只是对于字符串操作有效
+与前者相比，我们的reader可以使用reandLine()方法一次读取一行的数据并将其存为一个字符串，此时我们再将这个返回的字符串转为字节数组，此时我们就可以使用write(String data,int offset,int length)方法将数据写入文件了。此时我们的读写效率将会再次的到提高，当然这依旧只是对于字符串操作有效
 
 #### DataInputStream & DataOutputStream
 
 既然我们之前有提到字符流不可以用以处理二进制文件，那么我们便可以使用DataInputStream和DataOutputStream类来处理二进制文件。它们是专职处理二进制文件的类，它们的构造方法是：
 
 ```java
-    DataInputStream(InputStream in)
-    DataOutputStream(OutputStream out)
+    DataInputStream(new FileInputStream(new File))
+    DataOutputStream(new FileOutputStream(new File))
 ```
 
 然而它们也同样有一缺点：它们均为字节流，故而不支持缓存，因此它们的执行效率同样很是低下
@@ -961,8 +1004,8 @@ BufferedWriter(Writer out)
 #### BufferedInputStream & BufferedOutputStream
 
 ```java
-BufferedInputStream(InputStream in)
-BufferedOutputStream(OutputStream out)
+BufferedInputStream(new FileInputStream(new File))
+BufferedOutputStream(new FileOutputStream(new File))
 ```
 
 BuffferdInputStream和BufferedOutputStream加上了Buffered修饰也就意味着它们正式拥有了使用缓存的能力，因此它们便获得了效率提升。除此之外又因为它们本身实际上还是字节流，所以它们也可以用于字符流的操作，也就是说它们可以处理字符串操作以外的操作。
@@ -972,8 +1015,8 @@ BuffferdInputStream和BufferedOutputStream加上了Buffered修饰也就意味着
 又是我们发现一些文件的后缀名很是奇怪，我们甚至无法将其打开。这是因为它们是专门用于处理对象的，而对象的序列化是一种把对象转换为字节流的操作，而反序列化是一种把字节流转换为对象的操作。而ObjectInputStream和ObjectOutputStream是专门用于处理对象的序列化和反序列化的类，它们的构造方法是：
 
 ```java
-    ObjectInputStream(InputStream in)
-    ObjectOutputStream(OutputStream out)
+    ObjectInputStream(new FileInputStream(new File))
+    ObjectOutputStream(new FileOutputStream(new File))
 ```
 
 这两个对象与前面的不同，它们操作对象实际上是对于同一个文件进行操作的，因此首先它们的构造方法中的in和out一定是相同的，除此之外，它们对于对象的读写都是基于方法的，其中writeObject(object)和readObject()便是核心了。它们将一对象存于一个文件之中，而后对于该文件进行序列化和反序列化从而实现对象的储存和取出。但需要注意的是在我们对于一个对象进行序列化和反序列化之前我们需要使其可序列化，即实现Serializable接口。
@@ -1044,7 +1087,7 @@ public class SeeDoctor implements Runnable{
                 try {
                     synchronized(Thread.currentThread()){
                         System.out.println("An urgent one："+(i+1)+" is on diagonal！");
-                        Thread.sleep(2000);
+                        Thread.sleep(20000);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -1055,7 +1098,7 @@ public class SeeDoctor implements Runnable{
 }
 
 //Main.JAVA
-Thread threadAlpha = new Thread(new SeeDoctor("P1"));
+        Thread threadAlpha = new Thread(new SeeDoctor("P1"));
         threadAlpha.setPriority(Thread.MAX_PRIORITY);
         threadAlpha.start();
 
@@ -1451,11 +1494,11 @@ XML 全称（Extensible Markup Language ），是一种标记语言，用以存�
 如果我们需要得到其标签名，则可调用getName方法即可，使用getAttribute(attribute)来获取指定的attribute的值（这里Node需要向下转型为Element才可以调用）。如若我们需要创建一个元素则可以使用Document对象调用createElement(tagName)即可，其中tagName即为其元素名，此时将返回一个Element对象，此时我们可以使用setTextContent方法设置其内部的文本元素，使用setAttribute(attribute,value)来设置一个attrubute。然后我们便可以使用一个元素调用appendChild将这个新元素添加至该元素的之中了，如若我们需要删除则使用removeChild(child)即可，其中child为要删除的元素。但是这一切的增加删除和修改后，我们都需要使用Transformer对象进行保存，与Document对象类似，我们创建该转换器对象也需要使用工厂对象创建：
 
 ```java
- TransformerFactory factory=TransformerFactory.newDefaultInstance();
+        TransformerFactory factory=TransformerFactory.newDefaultInstance();
         Transformer transformer=factory.newTransformer();
         transformer.setOutputProperty(OutputKeys.ENCODING,"UTF-8");//设置编码格式
-        DOMSource source=new DOMSource(document);
-        StreamResult result=new StreamResult(new FileOutputStream(path));//path即为文件所需保存的位置
+        DOMSource source=new DOMSource(document);//document为我们要保存的Document对象
+        StreamResult result=new StreamResult(new FileOutputStream(path));//path即为文件所保存的位置
         transformer.transform(source,result);
 ```
 
