@@ -1,40 +1,40 @@
 # Javascript Basicis Notes Review
 
-## String properties and Methods:
+## String properties and Methods
 
-#### toUpperCase:
+#### toUpperCase
 
 Change the String to upper case,<br>
 
-#### toLowerCase:
+#### toLowerCase
 
 Change the String to lower case,<br>
 
-#### charAt(index):
+#### charAt(index)
 
 Locate the character a the specific index of the String,<br>
 
-#### indexOf(string):
+#### indexOf(string)
 
 Locate the index of the specific String in a String,<br>
 
-#### trim():
+#### trim()
 
 To trim the wihtespace from the beginning,<br>
 
-#### starts(/ends)With(String):
+#### starts(/ends)With(String)
 
 Return if the String starts(or ends) with the specific String,<br>
 
-#### includes(String):
+#### includes(String)
 
 Return is the String contains the specific String,<br>
 
-#### slice(start,length):
+#### slice(start,length)
 
 Return the specific length of the String from the start index,<br>
 
-#### slice(start):
+#### slice(start)
 
 If you do not set a length ,it will slice all the rest string from this String,<br>
 and if you set the start number with a minus one,it will start to count from the end of this <br>
@@ -48,7 +48,7 @@ or expressions directly without the concatnation of the string, and the method t
 to instead of using double quotation and single quotation, and use the use the ${}to include the expressions
 and objects.
 
-#### Instance:
+#### Instance
 
 ```javaScript
 const name = "John";
@@ -77,35 +77,35 @@ Rongxin Yang
 
 ## Array properties and methods
 
-#### length:
+#### length
 
 This property will get the full length of the array
 
-#### concat(array):
+#### concat(array)
 
 When we use A.concat(B), the content of the array B will be added to array Array
 
-#### reverse():
+#### reverse()
 
 Use this method we could reverse the whole order the this array
 
-#### unshift(content):
+#### unshift(content)
 
 Use this method we will add the element to the head of the array
 
-#### shift():
+#### shift()
 
 Use this method we will remove the element from the head of the array
 
-#### push(content):
+#### push(content)
 
 Use this method we will add the element to the end of the array
 
-#### pop():
+#### pop()
 
 Use this method we will remove the element from the end of the array
 
-#### splce(start,length):
+#### splice(start,length)
 
 Use this method we could mutate the array, then we will get an array that contains the specific content
 from the old one
@@ -126,7 +126,7 @@ number2=7;
 console.log(`the first value is ${number}`);
 console.log(`the second value is ${number2}`);
 //Change the reference
-let person={name:'bob};
+let person={name:'bob'};
 let person2=person;
 person2.name="susy";
 console.log(`the first person is ${person.name}`);
@@ -151,13 +151,13 @@ let person2={person}
 
 #### The deferences between null and undifined
 
-##### The undefined value means the javaScript could not find value for this,so it includes three conditions:
+##### The undefined value means the javaScript could not find value for this,so it includes three conditions
 
 1. Variable without value<br>
 2. Missing function arguments<br>
 3. Missing object properties<br>
 
-#### Here's the example:
+#### Here's the example
 
 ```Javascript
 const people = {
@@ -172,7 +172,7 @@ console.log(people.age);
 console.log(sayHi());
 ```
 
-#### The result:
+#### The result
 
 ```
 undefined
@@ -337,7 +337,7 @@ total: 1000
 current money:500
 ```
 
-#### Square Notation:
+#### Square Notation
 
 In javaScript we not only have the dot natation, but also the square which make us to build the dynamic properties
 for our object, for example:

@@ -1,6 +1,6 @@
 # Javascript DOM
 
-#### style:
+#### style
 
 WIth this property we could set the css of our HTML object easily, and it's used
 in this way:
@@ -29,15 +29,15 @@ We use it's property to navigate the parent element of the object
 
 #### previous(/next)sibling
 
-With these two properties we could navigate the siblings, but lie the childNodes, these properties include
+With these two properties we could navigate the siblings, but like the childNodes, these properties include
 the whitespace, to avoid that, we could use previous(/next)ElementSibling instead
 
 #### textContent
 
-This is a property taht offers us to get the text content of this object like it's name, and also with this
+This is a property that offers us to get the text content of this object like it's name, and also with this
 property gives us a way to set the the value of the text cotent
 
-#### Note: There is one thing we should take the attantion:both methods getElementByTagName and getElementByClassNamereturn a HTMLCollection, enven if there is only one value init, so when we need to set property to the object ,we should use the index to get a certain object first, but byId is not included, cause the particularity of Id
+#### Note: There is one thing we should take the attantion:both methods getElementByTagName and getElementByClassName return a HTMLCollection, even if there is only one value in it, so when we need to set property to the object ,we should use the index to get a certain object first, but by Id is not included, cause the particularity of Id
 
 #### concept of classList
 
@@ -48,7 +48,7 @@ it we could have a better way to add and remove the class in this object
 
 Use these methods we could create the elements and fill the element then add it to a specific object
 
-#### parentElement.insertBefore(element,location):
+#### parentElement.insertBefore(element,location)
 
 With this method, we could insert the element to the spefic location which is before the location object in the
 parentElement
@@ -91,11 +91,11 @@ or we just use the listeners like this:
 object.addEventListner(event,callBack/callback reference);
 ```
 
-But in this way , we should notice one thing that we could use an annoymous function direstly in the listener, and also we could use a callback reference instead, but this reference should not include the parentheses, because if you add them, it will be invoked before you trigger that event.
+But in this way , we should notice one thing that we could use an annoymous function directly in the listener, and also we could use a callback reference instead, but this reference should not include the parentheses, because if you add them, it will be invoked before you trigger that event.
 
-#### nameInput.value()
+#### input.value
 
-Within the keyup event, we can use nameInput.value to get the current value we're inputting, and this value will always be updated after you entered
+Within the keyup event, we can use input.value to get the current value we're inputting, and this value will always be updated after you entered
 
 #### argument in callback
 
@@ -139,7 +139,7 @@ until we want the default behavior happen
 
 #### localStorage and sessionStorage
 
-These two storage object are offered by browser itself, so we could find them in the debug console panel at application part. These two object provide the methods setItem(key,value), getItem(key),remove(key) and clear(). So we could notice that these values are matched with keys. Once you give the value to this key, the previous value will be overwrited. For the practical use of these methods
+These two storage object are offered by browser itself, so we could find them in the debug console panel at application part. These two object provide the methods setItem(key,value), getItem(key),removeItem(key) and clear(). So we could notice that these values are matched with keys. Once you give the value to this key, the previous value will be overwrited. For the practical use of these methods
 , there will be skipped. But there is one thing we should take attention, that is is the difference between both two object. The former one will always exist at this page until you remove it, even when you comment the code you create it, and reopen the browser, but if you do the same thing to the latter one, it can only exists in this page, when you open the another page , it won't work
 
 #### deeper understand for localStorage
@@ -202,17 +202,17 @@ function person(name, age) {
   this.name = name;
   this.age = age;
   this.greet = function (sex) {
-    console.log(
-      `Hello, my name is ${this.name} and my age is ${this.age}, i'm a ${sex}`
-    );
     return `Hello, my name is ${this.name} and my age is ${this.age}, i'm a ${sex}`;
   };
 }
 const jerry = new person('jerry', 20);
 const tom = new person('tom', 22);
-jerry.greet.call(tom, 'boy');
-jerry.greet.apply(tom, ['boy']);
+const get = jerry.greet.call(tom, 'boy');
+const getMessage = jerry.greet.apply(tom, ['boy']);
 const message = jerry.greet.bind(tom, 'boy');
+console.log(get);
+console.log(getMessage);
+console.log(message());
 ```
 
 So we found when we use call or apply these kind of methods, we need just call the method reference insted of invoking it directly. and there's potint, there are some differences between call , apply and bind:
