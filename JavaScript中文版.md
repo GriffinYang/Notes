@@ -684,3 +684,285 @@ console.log(get);
 console.log(getMessage);
 console.log(message());
 ```
+
+## JavaScript补充点
+
+## 即时调用函数表达 IIFE(Immediately invoked function expression)
+
+该函数表达形式类似于Java的匿名函数，其函数主体是没用名称的，且由一对小括号进行包含，可以将其看作是一个独立的函数引用，因此若想调用它则同样需要一个小括号:
+
+```javascript
+(
+  // local scope
+  function ([params1,params2...]) {
+   //expressions...
+  }
+)([params1,params2...]);
+```
+
+使用该表达式不如直接调用函数便利，但是可以保护其内部的局部域即local scope部分，使其无法被修改，甚至访问。
+
+## 预加载 Hoisting
+
+JavaScript代码与其他编程语言一样也是自上而下执行的，因此诸如const和let等变量是无法在未声明前被调用的，否则会返回一个错误。但是函数和var变量却拥有预加载能力，虽然我们可以先调用var变量再声明，但是我们获取的该变量也只是一个未定义的值。而函数却不同，即使先调用后声明，我们的函数功能也是可以正常使用的，其中的原因在于，无论是var还是函数它们都可以理解为再js加载时便会首先将这些函数和var变量提取到js的最开头以使其可以被直接调用，只是var变量在提前时只是提前了标识符却未提前其值，这也就导致值依旧处于未定义的状态
+
+## 原型链
+
+![原型链基本框架](https://img-blog.csdnimg.cn/8008480353ad4c148c9bfa5af977d601.png#pic_center)
+
+```javascript
+function Person(first, last, age, eyecolor) {
+  this.firstName = first;
+  this.lastName = last;
+  this.age = age;
+  this.eyeColor = eyecolor;
+}
+
+const myFather = new Person('John', 'Doe', 50, 'blue');
+const myMother = new Person('Sally', 'Rally', 48, 'green');
+
+console.log('1:访问构造方法');
+console.log('对象访问构造方法:');
+console.log(myFather.constructor);
+console.log(myMother.constructor);
+console.log('等价性：');
+console.log(myMother.constructor === myFather.constructor);
+console.log('2:访问原型');
+console.log('构造方法访问原型:');
+console.log(Person.prototype);
+console.log('对象访问原型:');
+console.log(myFather.__proto__);
+console.log(myMother.__proto__);
+console.log('等价性：');
+console.log(myFather.__proto__ === myMother.__proto__);
+console.log(myFather.__proto__ === Person.prototype);
+console.log('3:访问Object原型');
+console.log('Person原型访问Object原型:');
+console.log(Person.prototype.__proto__);
+console.log('Object对象访问Object原型:');
+console.log(new Object().__proto__);
+console.log('Object构造方法访问Object原型:');
+console.log(new Object().constructor.prototype);
+console.log('等价性：');
+console.log(new Object().__proto__ === new Object().constructor.prototype);
+console.log(new Object().__proto__ === Person.prototype.__proto__);
+```
+
+## Arrow Function
+
+所谓的Arrow Function，是指用箭头函数的方式定义函数，箭头函数的语法是：
+
+```javascript
+const functionName=(params)=>{  /*params是参数,当没有参数时需要使用小括号，有一个参数时，可以省略小括号，当只有一条语句时可以省略大括号*/
+  //expressions... /*当只有一条语句时，若需要返回一个值，则可以省略return;如果是一条语句，且返回值是一个对象时，这个对象需要被小括号包含*/
+}
+```
+
+### Arrow function和Regular function的this的指向的差异
+
+Arrow function的this始终指向它的包含域，而Regular function的this指向的是调用它的对象。
+
+```javascript
+//修改前
+const bob = {
+  firstName: 'bob',
+  lastName: 'smith',
+  sayName: function () {
+    console.log(this);
+    console.log(`Hello, my name is ${this.firstName} ${this.lastName}`);
+  },
+};
+
+const anna = {
+  firstName: 'anna',
+  lastName: 'sanders',
+  sayName: () => {
+    console.log(this);
+    console.log(`Hello, my name is ${this.firstName} ${this.lastName}`);
+  },
+};
+
+bob.sayName();
+//此时因为常规函数的this指向调用对象；所以this指向bob对象，因此bob的信息被正确解析
+anna.sayName();
+//此时因为箭头函数的this指向包含域，所以this指向全局域对象即window，因此anna的信息未被正确解析
+
+
+//修改后
+const bob = {
+ firstName: 'bob',
+  lastName: 'smith',
+  sayName: function () {
+    console.log(this);//此时this指向调用者bob对象
+    [window.]setTimeout(function () {//此时该常规的this指向调用者window对象
+      console.log(this);//this指向window对象，对象无法正常解析
+      console.log(`Hello, my name is ${this.firstName} ${this.lastName}`);
+    }, 1000);
+  },
+};
+
+const anna = {
+  firstName: 'anna',
+  lastName: 'sanders',
+  say: function () {
+    console.log(this);//此时this指向调用者window
+    [window.]setTimeout(() => {
+      console.log(this);//此时该箭头函数的this指向包含域对象anna，因此anna信息被正常解析
+      console.log(`Hello, my name is ${this.firstName} ${this.lastName}`);
+    }, 0);
+  },
+};
+
+bob.sayName();//见代码部分
+anna.sayName();//见代码部分
+```
+
+### 箭头函数与常规函数的默认值以及一些特性
+
+在ES6中，箭头函数和常规函数都是是可以设置默认值的。当我们设置了默认值后，即使调用函数时为传入参数，那么该函数也将使用默认值进行操作。
+
+```javascript
+function fnName(param1 = defaultValue, param2 = defaultValue) {
+  //...
+}
+fnName();//param1和param2都使用默认值
+
+const fnName = (param1 = defaultValue, param2 = defaultValue) => {
+  //...
+}
+fnName();//param1和param2都使用默认值
+```
+
+我们知道JavaScript中函数是具备预解析能力的，所以配合着默认值，我们可以在任意位置调用常规函数，但是箭头函数却不能，它本身是没有名字的匿名函数，只是寄居于一个变量之中，因此遵循变量的预解析法则，因此箭头函数是不支持预解析的。
+
+## ES6中的数组拆解
+
+如果这里有一个数组，我们可以使用索引或者各式方法来提取其中的数据，但是实际上，ES6中的数组提取方法更加强大，更加灵活。
+
+```javascript
+const friends=['bob','anna','jane','tom'];
+
+//数组拆解
+const [first,second,third,fourth]=friends;
+//访问数组元素
+console.log(first);//bob
+console.log(second);//anna
+console.log(third);//jane
+console.log(fourth);//tom
+```
+
+数组拆解的顺序是按照数组的顺序来拆解的，如果拆解元素的数量不足，那么后面的元素将被忽略。反之，如果元素过多，多出的元素将显示为undefined:
+
+```javascript
+const friends=['bob','anna','jane','tom'];
+
+//数组拆解
+const [first,second,third,fourth]=friends;
+//访问数组元素
+console.log(first);//bob
+console.log(second);//anna
+console.log(third);//jane
+console.log(fourth);//tom
+console.log(fifth);//undefined
+```
+
+如果希望跳过某些元素，则不为其命名即可
+
+```javascript
+const friends=['bob','anna','jane','tom'];
+
+//数组拆解
+const [first,second,,fourth]=friends;//跳过了jane
+//访问数组元素
+console.log(first);//bob
+console.log(second);//anna
+console.log(third);//undefined
+console.log(fourth);//tom
+console.log(fifth);//undefined
+```
+
+### 对象的交换
+
+除了拆解数组外，这个运算符还可以用来交换对象:
+
+```javascript
+let rongxin="rongxin";
+let griffin="griffin";
+[rongxin,griffin]=[griffin,rongxin];
+console.log(rongxin,griffin);//输出griffin,rongxin
+```
+
+### 对象的拆解
+
+与数组的拆解不同的是，拆解对象需要使用大括号来包含,此外需要注意的是我们不可在拆解元素时使用非该对象的属性值作为拆解元素:
+
+```javascript
+const bob = {
+  first: 'bob',
+  last: 'sanders',
+  city: 'chicago',
+  siblings: {
+    sister: 'jane',
+  },
+  ,
+  sayhello: function () {
+    console.log('Hello');
+  },
+};
+
+const {
+  first: firstName,
+  last,
+  city,
+  zip,//对象中无该属性
+  siblings: { sister: favoriteSibling },
+} = bob;
+console.log(firstName, last, city, zip, favoriteSibling);//输出bob sanders chicago undefined jane
+sayhello();//输出hello
+```
+
+### repeat()
+
+该方法为ES6提供了一个新的方法，用来重复一个字符串或者一个字符:
+
+```javascript
+const str = 'hello';
+const str2 = str.repeat(3);
+console.log(str2);//输出hello hello hello
+```
+
+## 扩展符(Spread operator)
+
+在ES6中新增了一种扩展符，其可用于将一个字符串拆解为一个字符数组，将一个数组拆解为多个元素以合并数组集亦或者将一个数组复制
+
+### 拆解字符串
+
+```javascript
+const udemy = 'udemy';
+const letters = [...udemy];
+console.log(letters);//输出u,d,e,m,y
+```
+
+### 合并数组
+
+```javascript
+const boys = ['john', 'peter', 'bob'];
+const girls = ['susan', 'anna'];
+const bestFriend = 'arnold';
+
+const friends = [...boys, bestFriend, ...girls];
+console.log(friends);//输出 ['john', 'peter', 'bob', 'arnold', 'susan', 'anna']
+```
+
+### 数组复制
+
+我们知道数组也是一个对象，如果将一个数组直接赋值给另一个数组，则它们将在内存中共用一个地址引用，则这就意味着它的数据将会同步，当其中一个数组数据发生改变时，则另一个将同时发生改变，为了避免这一问题，我们可以将一个数组通过扩展符进行复制，将这个复制的对象传递给另一个数组，但是注意这个该方法仅对数组对象有效
+
+```javascript
+const boys = ['john', 'peter', 'bob'];
+const girls = ['susan', 'anna'];
+const bestFriend = 'arnold';
+
+const friends = [...boys, bestFriend, ...girls];
+const newFriends = [...friends];
+```
