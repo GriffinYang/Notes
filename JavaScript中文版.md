@@ -375,7 +375,7 @@ object.style.propertyName = value;
 
 ### getElementsByTagName和querySelectorAll的区别
 
-两者均可以通过选择器参数获取符合其选择器参数的所有document元素对象，然而前者获取的只是一个类数组的对象，其事实上并不是一个严格意义上的数组，因此它除了可以使用一个foreach方法意外，注入map,filter等数组方法均不可以调用，而后者则是会返回一个数组集合因此可以调用所有的数组方法，当然也包括了foreach方法
+它们两者的区别在于其返回值的区别，前者返回的是一个动态的HTMLCollection集合，而后者返回的是一个static的NodeList集合。这也就意味着前者会随着网页的变化而变化，而后者不会，因此再遍历时，如果页面越大，元素越多，那么前者将会相对后者具备更快的执行效率。单数无论它们返回值是什么，只是们的返回值都类数组的集合无法使用foreach等数组遍历方法，若希望使用这些方法则需将其转为一个数组，这一点我们将在后文中有所提及
 
 ### childNodes和children的区别
 
@@ -956,7 +956,7 @@ console.log(friends);//输出 ['john', 'peter', 'bob', 'arnold', 'susan', 'anna'
 
 ### 数组复制
 
-我们知道数组也是一个对象，如果将一个数组直接赋值给另一个数组，则它们将在内存中共用一个地址引用，则这就意味着它的数据将会同步，当其中一个数组数据发生改变时，则另一个将同时发生改变，为了避免这一问题，我们可以将一个数组通过扩展符进行复制，将这个复制的对象传递给另一个数组，但是注意这个该方法仅对数组对象有效
+我们知道数组也是一个对象，如果将一个数组直接赋值给另一个数组，则它们将在内存中共用一个地址引用，则这就意味着它的数据将会同步，当其中一个数组数据发生改变时，则另一个将同时发生改变，为了避免这一问题，我们可以将一个数组通过扩展符进行复制，将这个复制的对象传递给另一个数组
 
 ```javascript
 const boys = ['john', 'peter', 'bob'];
@@ -966,3 +966,367 @@ const bestFriend = 'arnold';
 const friends = [...boys, bestFriend, ...girls];
 const newFriends = [...friends];
 ```
+
+### 对象复制
+
+除了将数组复制，亦可以将对象复制:
+
+```javascript
+const bob = {
+  first: 'bob',
+  last: 'sanders',
+  city: 'chicago',
+  siblings: {
+    sister: 'jane',
+  },
+  sayhello: function () {
+    console.log('Hello');
+  },
+};
+const newPerson = { ...bob };
+console.log(newPerson);
+```
+
+再复制对象后，新建的对象可以被扩展和内容覆盖，因为此时扩展符只是在一个对象里将另一个对象的所有属性方法扩展出来置于新对象之下，因此它只是新对象的一部分，而不是全部的属性方法。因此我们可以再为新对象增添一些新的属性方法。如果我们希望覆盖被扩展的对象的值，则仅需在新对象为其重新赋值即可:
+
+```javascript
+const bob = {
+  first: 'bob',
+  last: 'sanders',
+  city: 'chicago',
+  siblings: {
+    sister: 'jane',
+  },
+  sayhello: function () {
+    console.log('Hello');
+  },
+};
+const newPerson = { ...bob,job: 'web developer' };//对象的扩展
+const newPerson = { ...bob,first: 'john' };//属性的覆盖
+console.log(newPerson);
+```
+
+### 将DOM元素转换为数组
+
+在此之前我们提到过querysqlqctorAll和getElementsByTagName都可以选取页面的元素对象将其置于各自的NodeList和HTMLCollection对象之中，但是它们都是类数组对象因此无法直接使用数组的方法，为了解决这一问题我们便可以使用扩展符将其转换为数组，如下所示:
+
+```javascript
+const elements=document.querySelectorAll('div');
+const divEle=[...elements];
+```
+
+### 剩余收集符
+
+同样使用前面的扩展符，我们将其置于接收对象的末尾即可将其转为剩余收集符。前者是将对象拆解，而这里则是将对象的部分元素合并：
+
+```javascript
+//arrays
+const fruit = ['apple', 'orange', 'lemon', 'banana', 'pear'];
+const [first, second, ...fruits] = fruit;//此时我们的前两个参数first和second被分别赋予了apple和orange两个值，而其后的lemon,banana和pear则被赋予了fruits之中整合成为了一个新的fruits数组
+// console.log(first, fruits);
+
+//objects
+const person = { name: 'john', lastName: 'smith', job: 'developer' };
+const { job, ...rest } = person; //与数组不同的是，对象是根据属性值被拆解的，因此这里除了job被都被单独提取外
+// const {  ...rest,job } = person;//注意剩余收集器须置于末尾
+// console.log(job, rest);
+
+const testScores = [78, 90, 56, 43, 99, 65];
+
+const getAverage = (name, ...scores) => { //将第二个即之后的参数统一置于剩余收集器之中
+  console.log(name);
+  console.log(scores);
+  let total = 0;
+  for (const score of scores) {
+    total += score;
+  }
+  console.log(`${name}'s average score is ${total / scores.length}`);
+};
+
+getAverage(person.name, 78, 90, 56, 43);
+getAverage(person.name, ...testScores);
+
+```
+
+## Array.of和Array.from()
+
+两者均是将指定的元素转换为一个数组，前者是将其内部的所有参数(不计类型)均置于同一个数组之中:
+
+```javascript
+const array=Array.of('Rongxin Yang',12,true);
+//数组将被储存为['Rongxin Yang',12,true]此时三种不同的数据类型的数据被置于同一个数组之中
+```
+
+后者是将类数组的对象转换为数组对象，如字符串，NodeList，HTMLCollection，set等等，如下所示:
+
+```javascript
+const strArray=Array.from('Rongxin');/*返回数组:[R,o,n,g,x,i,n]*/
+```
+
+类数组的对象还有很多，例如方法中的参数列表其被arguments对象所储存，其储存方法也是域数组类似，因此也是一个类数组对象，故也可以使用Array.from()方法将其转换为数组对象。
+
+### Array.from的扩展
+
+Array.from除了第一个参数是用以接受转化的对象，事实上它还可以有第二个参数，也就是一个回调函数，该回调函数的参数即代表了前面的对象转换为数组后的各个元素对象，其可以返回任意值以将整个函数返回值指定为指定值,其后的回调函数相当于是该函数返回值(数组)的一个map方法：
+
+```javascript
+const p = document.querySelectorAll('p');
+const result = document.getElementById('result');
+const second = document.getElementById('second');
+
+let newText = Array.from(p);
+newText = newText.map(item => `<span>${item.textContent}</span>`).join(' ');//使用传统的map方法对转化后的数组进行操作
+
+result.innerHTML = newText;
+
+const text = Array.from(document.querySelectorAll('p'), item => {//使用回调函数作为map方法直接进行操作，其结果与前面的结果是一致的
+  return `<span>${item.textContent}</span>`;
+}).join(' ');
+
+second.innerHTML = text;
+```
+
+## findIndex,every和some
+
+与find类似，find是用以查找数组中包含指定指定特性的唯一对象，因此获取的返回值是一个对象；而findindex则是获取该对象的索引值，因此返回值是一个数字。
+
+```javascript
+const friends=[
+  {
+    id: 1,
+    name:'Rongxin Yang',
+    age:21
+  },
+  {
+    id: 2,
+    name:'Tao Xueting',
+    age:20
+  },
+  {
+    id: 3,
+    name:'Wang Hanqi',
+    age:20
+  }
+]
+const result=friends.find(item=>item.id===2);//返回对象{id: 2, name: "Tao Xueting", age: 20}
+const result2=friends.findIndex(item=>item.id===2);//返回索引值1
+```
+
+every是值某个数组中所有值都满足某一条件便返回true，否则返回false；some是值某个数组中任意一个值满足某一条件便返回true，否则返回false:
+
+```javascript
+const grades=['A','B','C','D','E'];
+const goodeGrades=['A','B','B','A','B'];
+//只要有一个满足条件即可为true
+const hasBadGrades=goodGrades.some(item=>item==='C'||item==='D');//返回false
+const hasGoodGrades=grades.some(item=>item==='A'||item==='B');//返回true
+//必须全部满足条件才能为true
+const hasGoodGrades2=goodeGrades.every(item=>item==='A'||item==='B');//返回true
+const hasBadGrades2=goodeGrades.every(item=>item==='C'||item==='D');//返回false
+```
+
+## for in和for of
+
+前者可以遍历对象和数组，但是其主要是遍历对象，不建议遍历数组因为遍历数组时我们首先返回的是索引，而后还要使用所以获取对象； 而for of 是遍历数组专用的语法，直接返回数组元素对象：
+
+```javascript
+ const person={
+    id: 1,
+    name:'Rongxin Yang',
+    age:21
+  }
+  const array=[1,2,3,4,5];
+  //for in遍历对象
+  for(let key in person){
+    console.log(key);//输出id,name,age
+    log(person[key]);//输出1,Rongxin Yang,21
+  }
+  //for in遍历数组
+  for(let key in array){
+    console.log(key);//输出0,1,2,3,4
+    log(array[key]);//输出1,2,3,4,5
+  }
+  //for of遍历数组
+  for(let item of array){
+    console.log(item);//输出1,2,3,4,5
+  }
+```
+
+## keys,values和entries
+
+任意一个对象的属性和值都可以通过keys,values,entries方法获取，其中keys方法返回的是一个数组，其中每个元素都是对象的属性；values方法返回的是一个数组，其中每个元素都是对象的值；entries方法返回的是一个数组，其中每个元素都是一个数组，每一个数组的第一个元素是对象的属性，第二个元素是对象的值，而且整个属性和值是相对应的
+
+## Set
+
+尽管JavaScript的数组已经很好用了，但是这里有一个小问题即再数组中，所有的元素都是不被保证是唯一的，这也就意味着，同一个数组内可能存在两个完全一样的元素，而为了解决这一问题。我们可以采用Set数据结构，Set数据结构是一种没有重复元素的数据结构，它类似于数组，但是成员的值都是唯一的，不过由于它是类数组，因此它只可以使用foreach，若希望使用数组方法则需首先转换为一个数组。
+
+对于Set,它可以使用add,delete,has,size方法，其中add方法可以添加元素，delete方法可以删除元素，has方法可以判断元素是否存在,size获取其内部元素数量。
+
+```javascript
+const friends = ['bob', 'anna', 'jane', 'tom', 'lily','tom', 'lily'];
+const setItem = new Set(friends);
+console.log(setItem);
+```
+
+## Promise
+
+Promises是一个对象，它代表一个异步操作，可以用then方法来指定回调函数，当异步操作完成时，会执行回调函数。它均有三种状态，Pending，Resolved，Rejected。这三个状态分别意为等待状态，成功状态，失败状态。当我们的Promise处于等待状态就意味着什么都没有发生，而当我们的Promise处于成功状态时(调用了resolve方法)，这是我们便可以使用then来执行下一步操作了；如果处于失败状态即调用了reject方法，则可以使用catch(失败状态类似于Java中的异常情况因此需要对其进行捕获)来执行下一步操作了。
+
+为了更好的理解，这里有一个很形象的例子:当我们去餐馆吃饭时，我们并不是去了餐厅就能吃上饭的，首先我们去了之后需要点餐，而点餐之后我们需要等待，这个等待时间就相当于Pending时间；正常情况下我们可以等一段时间后就可以拿到菜了，此时这就相当于调用了reslove，这是我们就可以吃饭了；如果点餐失败了，如某种材料突然用完了或者其他各种情况无法正常做出我们需要的菜时，这是我们拿不到菜，这就相当于调用了reject，这时我们就不能吃饭了，这时我们就可以使用catch来捕获错误了。
+
+```javascript
+const heading1 = document.querySelector('.one');
+const heading2 = document.querySelector('.two');
+const heading3 = document.querySelector('.three');
+
+const btn = document.querySelector('.btn');
+
+btn.addEventListener('click', () => {});
+
+const promise = new Promise((resolve, reject) => {//这里的两个参数即我们所需要的两个方法
+  let value = false;
+  if (value) {
+    resolve([1, 2, 4]); //使用该方法意味着我们的Promise处于成功状态，其内部所传递的参数可以是任意对象，可以是一个对象，一个数组，一个字符串等等。then方法中的回调函数的参数将会将其接收。此时promise的状态(status)即为resolved
+  } else {
+    reject(`there was a error, value is false`);//使用该方法意味着我们的Promise处于失败状态，其内部所传递的参数可以是任意对象，可以是一个对象，一个数组，一个字符串等等。catch方法中的回调函数的参数将会将其接收。此时promise的状态(status)即为rejected
+  }
+});
+promise
+  .then((taco) => {
+    console.log(taco);//接收到了成功(resolve)状态的参数
+  })
+  .catch((err) => {
+    console.log(err);//接收到了失败(reject)状态的参数
+  });
+
+```
+
+实际案例1(该案例中，我们通过点击按钮可以将一张随机图片添加至容器之中)：
+
+```javascript
+const heading1 = document.querySelector('.one');
+const heading2 = document.querySelector('.two');
+const heading3 = document.querySelector('.three');
+const btn = document.querySelector('.btn');
+const container = document.querySelector('.img-container');
+const url = 'https://source.unsplash.com/random';
+btn.addEventListener('click', () => {
+  loadImage(url)
+    .then((taco) => container.appendChild(taco)) //当我们点击按钮时，我们需要加载一张图片，如果地址正确，则将会返回正确的图片对象，而后我们将获得的图片对象添加到容器中
+    .catch((err) => console.log(err));  //如果遇到网络问题或者图片地址有误则此时将会返回错误信息，此时我们可以将其捕获
+});
+
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    let img = new Image();
+    img.addEventListener('load', () => {  //当任务成功加载时，将会触发该事件
+      resolve(img);  //将图片对象返回给then方法
+    });
+    img.addEventListener('error', () => { //当任务失败时，将会触发该事件
+      reject(new Error(`Failed to load image from the source : ${url}`)); //将错误信息返回给catch方法
+    });
+    img.src = url;  //设置图片的地址
+  });
+}
+```
+
+实际案例2(该案例中html部分应包含三个标题，这三个标题分别被heading1/2/3所代指，当我们点击按钮之后，这三个标题将分别在1秒，2秒和1秒后添加颜色)：
+
+```javascript
+const heading1 = document.querySelector('.one');
+const heading2 = document.querySelector('.four');
+const heading3 = document.querySelector('.three');
+const btn = document.querySelector('.btn');
+btn.addEventListener('click', () => {
+  addColor(1000, heading1, 'red')  //如果该链条中任意一个出现了问题，那么从该链条开始以后的所有then方法都将不再执行，继而进入catch方法；此外在该链条中只有当前一个执行完成后才会执行下一个then方法
+    .then(() => addColor(2000, heading2, 'green'))
+    .then(() => addColor(1000, heading3, 'blue'))
+    .catch((err) => console.log(err));
+});
+
+function addColor(time, element, color) {
+  return new Promise((resolve, reject) => {
+    if (element) {
+      setTimeout(() => {
+        element.style.color = color;
+        resolve();//注意这里的resolve方法，如果不调用该方法，将会导致Promise的状态始终处于Pending状态
+      }, time);
+    } else {
+      reject(new Error(`There is no such element ${element}`));//当然这里的reject如果不被调用则Promise的状态同样将始终处于Pending状态
+    }
+  });
+}
+```
+
+除了使用then来接收promise以外我们可以使用async 和 await来接收继而使其更加清晰明了：
+
+```javascript
+//初始态
+const heading1 = document.querySelector('.one');
+const heading2 = document.querySelector('.two');
+const heading3 = document.querySelector('.three');
+const btn = document.querySelector('.btn');
+btn.addEventListener('click', async () => { //在回调函数前添加async是其用法之一，我们也可直接在函数前添加async关键字，表示该函数是一个异步函数，这样就可以使用await来接收promise
+  await addColor(1000, heading1, 'red');
+  await addColor(2000, heading2, 'green');
+  await addColor(1000, heading3, 'blue');
+ try {  //此时捕获reject我们需要使用try catch来捕获就像Java的异常捕获一样
+    await addColor(1000, heading1, 'red');//此时await相当于是then
+    await addColor(1000, heading2, 'green');
+    await addColor(1000, heading3, 'blue');
+    console.log(first);//此时返回为undifined因为，rersolve未返回任何值
+  } catch (error) {
+    console.log(error);
+  }
+});
+function addColor(time, element, color) {
+  return new Promise((resolve, reject) => {
+    if (element) {
+      setTimeout(() => {
+        element.style.color = color;
+        resolve();
+      }, time);
+    } else {
+      reject(new Error(`There is no such element ${element}`));
+    }
+  });
+}
+
+//修改后
+const heading1 = document.querySelector('.one');
+const heading2 = document.querySelector('.two');
+const heading3 = document.querySelector('.three');
+const btn = document.querySelector('.btn');
+btn.addEventListener('click', async () => {
+  const result = await displayColor();
+  console.log(result);//此时返回的是我们返回的字符串hello
+});
+
+async function displayColor() { //函数前添加async关键字，表示该函数是一个异步函数，这样就可以使用await来接收promise，此时需要注意的是该函数此时默认返回值是一个promise，其value即接收到的value；而如果我们希望更改其返回值则自行添加一个返回值即可实现其覆盖
+  try {
+    const first = await addColor(1000, heading1, 'red');
+    await addColor(1000, heading2, 'green');
+    await addColor(1000, heading3, 'blue');
+    console.log(first);
+  } catch (error) {
+    console.log(error);
+  }
+  return 'hello';//这个return的字符串将会覆盖默认返回值即一个promise对象
+}
+
+function addColor(time, element, color) {
+  return new Promise((resolve, reject) => {
+    if (element) {
+      setTimeout(() => {
+        element.style.color = color;
+        resolve();
+      }, time);
+    } else {
+      reject(new Error(`There is no such element ${element}`));
+    }
+  });
+}
+
+```
+
+## Ajax

@@ -1385,7 +1385,7 @@ XML 全称（Extensible Markup Language ），是一种标记语言，用以存�
     ...
         DocumentBuilderFactory factory=DocumentBuilderFactory.newDefaultInstance();
         DocumentBuilder builder= factory.newDocumentBuilder();
-        doc=builder.parse("path:...\\*.xml");
+        Document doc=builder.parse("path:...\\*.xml");
     ...
  }
 ```
