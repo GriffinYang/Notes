@@ -1267,9 +1267,6 @@ const heading2 = document.querySelector('.two');
 const heading3 = document.querySelector('.three');
 const btn = document.querySelector('.btn');
 btn.addEventListener('click', async () => { //在回调函数前添加async是其用法之一，我们也可直接在函数前添加async关键字，表示该函数是一个异步函数，这样就可以使用await来接收promise
-  await addColor(1000, heading1, 'red');
-  await addColor(2000, heading2, 'green');
-  await addColor(1000, heading3, 'blue');
  try {  //此时捕获reject我们需要使用try catch来捕获就像Java的异常捕获一样
     await addColor(1000, heading1, 'red');//此时await相当于是then
     await addColor(1000, heading2, 'green');
@@ -1330,3 +1327,93 @@ function addColor(time, element, color) {
 ```
 
 ## Ajax
+
+```javascript
+const xhr = new XMLHttpRequest();  //创建一个XMLHttpRequest对象
+
+xhr.open('GET', './api/sample.txt'); //readyState在调用了open方法后就会变为1(初始值为0表示未设置)，表示已经准备好了，可以调用send方法了；其参数列表为open(method, url[[, async][, user][, password]]),第一参数为请求方法("GET", "POST", "PUT", "DELETE")，第二个参数为请求的url，第三个参数为是否异步，默认为true，第四个参数为用户名，第五个参数为密码，后三个参数均可省略
+xhr.onreadystatechange = function () {  //一个监听事件，用以在readyState发生改变时触发
+  if (xhr.readyState === 4 && xhr.status === 200) {//readyState为4表示请求已完成，status为200表示请求成功
+    const text = document.createElement('p');
+    text.textContent = xhr.responseText;//reponseText,将返回的响应信息转换为的字符串
+    document.body.appendChild(text);
+  } else {
+    console.log({
+      status: xhr.status, //请求的状态码，包含了UNSENT: 0 OPENED: 0 LOADING: 200 DONE: 200 客户端问题:400 服务端问题:500
+      text: xhr.statusText,
+      state: xhr.readyState,//
+    });
+  }
+};
+xhr.send();
+```
+
+readyState的五种状态
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>State</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>0</code></td>
+      <td><code>UNSENT</code></td>
+      <td>Client has been created. <code>open()</code> not called yet.</td>
+    </tr>
+    <tr>
+      <td><code>1</code></td>
+      <td><code>OPENED</code></td>
+      <td><code>open()</code> has been called.</td>
+    </tr>
+    <tr>
+      <td><code>2</code></td>
+      <td><code>HEADERS_RECEIVED</code></td>
+      <td><code>send()</code> has been called, and headers and status are available.</td>
+    </tr>
+    <tr>
+      <td><code>3</code></td>
+      <td><code>LOADING</code></td>
+      <td>Downloading; <code>responseText</code> holds partial data.</td>
+    </tr>
+    <tr>
+      <td><code>4</code></td>
+      <td><code>DONE</code></td>
+      <td>The operation is complete.</td>
+    </tr>
+  </tbody>
+</table>
+
+**注：** XMLHttpRequest是浏览器提供的对象，正如setInterval一样，因此它们都是委托给浏览器执行的，知意javascript空闲时才会接收其返回的结果
+
+### fetch的使用
+
+fetch是基于Promise的，此外它也是浏览器所提供的内置方法因此我们可以直接对其进行调用。
+
+```javascript
+const url = './api/people.json';
+
+const btn = document.querySelector('.btn');
+
+btn.addEventListener('click', () => {
+  const first = fetch(url)//调用fetch方法，返回一个Promise对象，返回值即为我们接收到的json字符串
+    .then((resp) => resp.json()) //因为接收的返回值是json对象因此调用json将其转为json字符串，此时返回一个promise对象，而这个promise对象的返回值即为我们所接受的json字符串所经过json方法转换后的对象
+    .then((data) => { 
+      displayItems(data);//这里的data接收的即为我们所接受的json字符串所经过json方法转换后的对象
+    })
+    .catch((err) => console.log(err));
+});
+
+const displayItems = (items) => {
+  const displayData = items
+    .map((item) => {
+      return `<p>${item.name}</p>`;
+    })
+    .join('');
+  const element = document.createElement('div');
+  element.innerHTML = displayData;
+  document.body.appendChild(element);
+};
+```
