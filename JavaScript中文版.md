@@ -302,7 +302,7 @@ console.log(person);
 }
 ```
 
-### obj.reduce(callback function(acc,curentItem){},initial value[,index])
+### obj.reduce(callback function(acc,curentItem,index){},initial value)
 
 这个方法是用以计算数组中各个元素对象的某一个属性的总和的，一般是数字属性。其包含三个参数，第一个参数是一个匿名函数，其参数列表又由两个参数所组成，其第一个参数表示的时当前的数量总和，第二个参数代表的是当前访问的元素对象。而这个reduce的第二个参数则为这个总量的初始值，第三个参数代表了当前访问元素的下标:
 

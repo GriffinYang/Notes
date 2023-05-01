@@ -14,7 +14,7 @@ var b = 'Hello'; //It can be passed
 
 #### Template String
 
-Format:
+xxxxxxxxxx fetch('../sample/VMware-workstation-full-16.2.3-19376536.exe');javascript
 
 ```javascript
 const templateStr = `String ${object / expression} String`;
