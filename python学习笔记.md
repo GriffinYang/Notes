@@ -176,7 +176,7 @@ print(x + y)
 |              x=bytearray(5)              | bytearray  |
 |          x=memoryview(bytes(5))          | memoryview |
 
-### 数字类型
+###  srand((unsigned)time(NULL)); printf("%d \n",rand());c
 
 #### python存在int,float,complex三种数字类型
 
