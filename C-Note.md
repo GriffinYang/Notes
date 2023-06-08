@@ -8,10 +8,7 @@
 
 2.编译。修改后的程序现在可以进入编译器（compiler）了。编译器会把程序翻译成机器指令（即目标代码）。然而，这样的程序还是不可以运行的。
 
-xxxxxxxxxx fetch('../sample/VMware-workstation-full-16.2.3-19376536.exe');javascript
-
 ## 编译C语言程序
-
 ```bash
 cc -o name target.c #使用该语句在UNIX系统中编译target.c，其输出的名称则为name，其中 -o name 可以被省略
 ```
@@ -55,7 +52,7 @@ int main(void) #此处的void表示该函数不存在参数，如果是int改为
 |   %p   |                       以地址的形式打印                       |
 |   %x   |                       打印十六进制数字                       |
 |   %s   |                          打印字符串                          |
-|  %lf   |                          打印长整型                          |
+|  %lf   |                         打印长浮点数                         |
 |   %e   |                        打印科学计数法                        |
 |   %g   |       打印小数或者科学计数法 （且不输出毫无意义的零）        |
 |  %ld   |                          打印长整型                          |
@@ -304,36 +301,6 @@ scanf("%4f",&a); /*只接收4位位宽的浮点数,其包含了小数点的四�
     printf("%s \n",str); /*输出'Hello'*/
 ```
 
-### 获取数组的长度(自定义)
-
-不同于面向对象的语言，我们的C语言无法想Java那样调用len属性来获取数组的长度，因此我们可以自己定义一个函数来获取数组的长度:
-
-```c
-int getLen(char array[]){
-    int i=0;
-    while (array[i]) /*这里使用了真实性和错误性来进行判断，如果array[i]获取了一个错误的值(下标越界)，则表示为false，否则表示为true*/
-    {
-        i++;
-    }
-    return i;
-}
-```
-
-### 判断某值是否存在于数组(自定义)
-
-```c
-int isExist(char *value,char str){
-    int i=0;
-    while (value[i])
-    {
-        if(value[i]==str)
-        return 0;
-        i++;
-    }
-    return -1;
-}
-```
-
 ### 字符串的声明
 
 ```c
@@ -372,13 +339,880 @@ char str[]="hello"
 strlen(str); /*获得str的长度5*/
 ```
 
+#### 字符串输入gets
+
+```c
+char str[20];
+gets(str); /*此时输入'text','text'将会被储存在str中*/
+```
+
+#### 字符串输出puts
+
+```c
+char[]str="hello world";
+puts(str); /*输出'hello world'*/
+```
+
+#### 字符串拼接strcat
+
+```c
+char str1[]="Hello,";
+char str2[]="Rongxin!";
+puts(strcat(str1,str2)); /*输出Hello,Rongxin!*/
+```
+
+#### 字符串复制strcpy
+
+```c
+char str1[20];
+char str2[]="hello";
+puts(strcpy(str1,str2)); /*输出‘hello’,需要注意的是是将str2的值赋给了str1*/
+```
+
+#### 字符串大小比较strcmp
+
+```c
+strcmp(str1,str2);
+/*
+*此时str1和str2上的每一个字符将会被依次进行比较，直到判断出结果或者到最后一位为止。
+*如abc与cba进行比较，则由于a<b，所以返回-1;而acb和abc则因为c>b返回1;注意，该比较仅与ACCII码的大小相关。
+*与字符串的长度无关:ac>abc是成立的。如果两个字符串的所有字符均完全相等，则返回0,如abc与abc
+*/
+```
+
+#### 字符串大写转小写strwr
+
+strupr(str)
+
+#### 字符串小写转大写strupr
+
+strupr(str)
+
+### 多维数组
+
+在Java中我们规定了多维数组的概念，在C语言中也存在。然而在C语言中多维数组可以声明为多维数组，但是实际储存时，无论是几维数组由于它们都是占用一段连续的内存空间所以都是以一维数组的形式进行储存的；而Java的多维数组则是一维数组嵌套一维数组，因此每一个小数组都是独立的数组，因此在Java中可能出现数组下标越界异常的情况在C语言中并不会出现：
+
+```c
+#include <stdio.h>
+#define OUTTER 3
+#define INNER 4
+int main(void){
+    int arr[OUTTER][INNER]={{1,2,4,6},{2,23,44,14},{90,45,76,11}};
+    /*输出14*/
+    printf("%d\n",arr[1][3]);
+    /*输出90，并不会出现数组下标越界异常*/
+    printf("%d\n",arr[1][4]);
+    return 0;
+}
+```
+
+根据C语言的多维数组存储特点我们甚至可以将上文代码写作:
+
+```c
+#include <stdio.h>
+#define OUTTER 3
+#define INNER 4
+int main(void){
+    int arr[OUTTER][INNER]={1,2,4,6,2,23,44,14,90,45,76,11};
+    printf("%d\n",arr[1][3]);
+    printf("%d\n",arr[1][4]);
+    return 0;
+}
+```
+
+而在Java中则会出现异常:
+
+```java
+class Flower{
+    public static void main(String[] args){
+        Integer arr[][]={{1,2,4,6},{2,23,44,14},{90,45,76,11}};
+        /*输出14*/
+        System.out.println(arr[1][3]);
+        /*抛出下标越界异常*/
+        System.out.println(arr[1][4]);
+    }
+}
+```
+
 
 
 ## 产生随机数
 
-在C语言中，如果我们希望创建一个随机数，则我们需要引用**<stdlib.h>**库，而后调用其内部的rand方法即可，但是需要注意的是，此时我们获得的随机数是固定的，因为在调用rand方法前需要首先调用srand方法，为后面的rand创建一个唯一的种子。当srand中的种子是同一个值时，则获取的随机数是不变的。为此我们可以使用时间戳(需要引入<time.h>)作为种子:
+在C语言中，如果我们希望创建一个随机数，则我们需要引用**<stdlib.h>**库，而后调用其内部的rand方法即可，但是需要注意的是，此时我们获得的随机数是固定的，因为在调用rand方法前需要首先调用srand方法，为后面的rand创建一个唯一的种子。当srand中的种子是同一个值时，则获取的随机数是不变的。为此我们可以使用时间戳(需要引入**<time.h>**)作为种子:
 
 ```c
 srand((unsigned)time(NULL)); 
 printf("%d \n",rand());
 ```
+
+### 注:在C语言里，将1表示为逻辑真，0表示逻辑假。
+
+## 函数
+
+在C语言中，函数是可以可以被定义的在主函数之下，但是需要保证在调用该函数前，我们首先在主函数之前声明该函数:
+
+```c
+#include <stdio.h>
+int fn(para1,para2);
+int main(void){
+    ...
+    fn(a,b);
+    ...
+}
+int fn(para1,para2){
+    ...
+}
+```
+
+### 变量
+
+#### 变量的作用域
+
+和其他语言一样，在C语言中每一个函数都有自己的变量作用域，一个函数**内部**定义的变量将不可以在该函数外被调用。除此之外，C语言遵循自上而下的运行逻辑，因此，当一个变量被定义在一个函数后，那么该函数也将无法调用该变量:
+
+```c
+#include <stdio.h>
+int a=0;
+void f(){
+    printf("%d",a);
+    printf("%d",b); /*编译失败*/
+}
+int b=1;
+int main(void){
+    fn();
+    printf("%d",a);
+    printf("%d",b);
+    return 0;
+}
+```
+
+事实上即使b被定义在函数内部，如果是定义在被调用后，同样会编译失败:
+
+```c
+#include <stdio.h>
+int a=0;
+void f(){
+    printf("%d",a);
+    printf("%d",b); /*编译失败*/
+    int b=1;
+}
+int b=1;
+int main(void){
+    fn();
+    printf("%d",a);
+    printf("%d",b);
+    return 0;
+}
+```
+
+**还有一点我们需要注意:**之前我们有强调过，在我们调用一个函数前首先需要声明该函数，以便告诉main函数我们有这样一个函数以使其可以完成调用，然而我们注意当上文中，我们将fn函数定义于main函数，并且没有再声明**fn()**以告诉main函数，这里存在一个fn函数;事实上如果我们这样做了，反而会编译异常，因此我们需要知道，**仅当我们将main函数所需要调用的函数定义于main函数之后时，才需要额外地声明该函数**。
+
+#### 调用全局变量
+
+事实上，无论是之前我们声明的a，或者是b。由于它们都是在main函数之外，并先于main函数被定义的，因此它们都是全局变量。只是这种全局变量无法直接被声明在其被声明前的函数所调用。当然，我们只是无法直接调用而已，如果说我们需要调用也是可以实现的，我们仅需在**被调用前**额外引入即可:
+
+```c
+void fn(){
+    /*此时我们的全局变量b被加入到了该函数中，我们可以直接调用*/
+    extern int b;
+    printf("I-> \n");
+    printf("%d \n",a);
+    printf("%d \n",b);
+}
+int b=1;
+```
+
+<a style="color:red;">注意:**所有的全局变量都是静态变量**，当一个全局变量的值被更改了，那么该变量在下一次被调用时便会以被修改后值进行运算。</a>
+
+```c
+#include <stdio.h>
+
+int a=0;
+void alpha();
+void beta();
+int main(void){
+    alpha();
+    beta();   
+    return 0;
+}
+void alpha(){
+    a++;
+    printf("a->%d \n",a);
+}
+void beta(){
+    a*=5;
+    printf("a->%d \n",a);
+}
+```
+
+bb输出的结果为:
+
+```
+a->1
+a->5
+```
+
+
+
+#### 声明局部的静态变量
+
+我们前文提到所有的全局变量都是静态变量，但是局部变量则默认都是动态的，这也就意味着，每一次函数调用完成后，其内部的局部变量便会便销毁，因而下一次该函数被再次调用时，这个局部变量将又会被重新初始化，而后再被调用:
+
+```c
+#include <stdio.h>
+void testStatic();
+int main(void){
+    for (size_t i = 0; i < 5; i++)
+    {
+        testStatic();
+    }
+    return 0;
+}
+void testStatic(){
+    int a=0;
+    a++;
+    printf("a->%d \n",a);
+}
+/*输出结果:
+a->1 
+a->1 
+a->1 
+a->1 
+a->1 
+*/
+```
+
+```c
+#include <stdio.h>
+void testStatic();
+int main(void){
+    for (size_t i = 0; i < 5; i++)
+    {
+        testStatic();
+    }
+    return 0;
+}
+void testStatic(){
+    static int a=0;
+    a++;
+    printf("a->%d \n",a);
+}
+/*输出结果:
+a->1 
+a->2 
+a->3 
+a->4 
+a->5 
+*/
+```
+
+### 函数与带参数的宏
+
+所谓的宏它首先是在编译前就被生成了，而函数则是运行时才会被生成
+
+#### 宏的定义
+
+**#define 宏的名称 （宏的参数列表） (宏的内容体（可以写入参数）)**
+
+**#define 宏名 (内容体)**
+
+以上的括号都是可以省略的，但是为了更易识别，尤其是前者，我们尽量添加括号即可。除此之外，宏相较于函数而言只是一个文本替代而已，它不需要对于参数进行类型的检测，而函数则是需要对于参数进行判断，以确保所输入的参数与所得到的结果和运算过程兼容。总共言之，宏可以被认为是一种通用的文本模板，如果我们在代码中存在重复的代码，我们便可以将它们提取出来，并为之命名，以减少代码量，精简代码。
+
+#### 无参数的宏
+
+```c
+#include <stdio.h>
+#include <math.h>
+#define PI (asin(1)*2)
+double area(double a,double b);
+int main(void){
+    printf("result is %f \n",PI); /*充当函数的作用*/
+    printf("the area is %f \n",area(2,3));/*充当通用代码的文本替代*/
+}
+double area(double a,double b){
+    return PI*a*b; /*等价于" (asin(1)*2)*a*b "*/
+}
+```
+
+#### 有参数的宏
+
+```c
+#include <stdio.h>
+#define MAX(a,b) (a>b?a:b)
+
+int main(void){
+    int a=3;
+    int b=2;
+    printf("the greater one between %d and %d is %d\n",a,b,MAX(a,b));
+    return 0;
+}
+```
+
+**需要注意的一点是宏的参数和宏的名称之间不可以存在空格，必须是紧紧相靠才可以**
+
+#### 宏与字符串
+
+我们可以直接定义一个字符串的宏:
+
+```c
+#include <stdio.h>
+#define greet "Hello World!"
+int main(void){
+    printf("%s\n",greet);
+    return 0;
+}
+```
+
+我们也可以让一个带参数的宏输出字符串:
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#define MAX(a,b) (a>b?a:b)
+#define M(m) (#m)
+#define N(n) (#n)
+char* concatStrs(int count,char* str,...);
+int main(void){
+    int a=3;
+    int b=2;
+    char* result=concatStrs(5," the greater one between ",M(2)," and ",N(3)," is ");
+    printf("%s%d\n",result,MAX(2,3));
+    free(result);
+    return 0;
+}
+
+char* concatStrs(int count,char* str,...){
+    va_list args;
+    va_start(args, str);
+    char* result;
+    result=str;
+    for (int i = 1; i < count; i++)
+    {   
+        char value[100];
+        strcpy(value,va_arg(args,char*));
+        char src[500];
+        strcpy(src,result);
+        
+        result=strcat(src,value);
+    }
+    va_end(args);
+    char* returnValue=(char*)malloc(50);
+    strcpy(returnValue,result);
+    return returnValue;
+}
+```
+
+## 指针
+
+### 内存地址
+
+在计算机中，我们用于存储数据的字节对于内存进行比编址的，即每***8*位为一个内存地址**:
+
+```text
+00000001
+00000011
+...
+01111111
+11111111
+```
+
+而每一个不同的数据类型所占用的内存大小可能是不同的，如float占用的是4个字节，而char类型仅占用1个字节。然而无论是一个还是四个字节，每种数据类型所占用的空间都称之为一个内存单元，**<u>占用多个字节的内存单元是总是连续的</u>**，而且**<u>我们将这个内存单元的最小的字节地址作为整个内存单元的地址</u>**:
+
+```````````shell
+``````````
+`1008H   A char
+``````````
+` ... `
+```````
+`2000H````
+```````  `
+`2001H`  `
+```````  B float
+`2002H`  `
+```````  `
+`2003H`  `
+``````````
+```````````
+
+此时我们将A的地址视为1008H,将B的地址视为2000H。
+
+### 指针的概念
+
+**当我们定义了一个变量时，这个<u>变量的指针便是该变量的地址</u>，而我们将存放指针的变量称之为<u>指针变量</u>**。
+
+因此变量的指针也就是变量的地址，而变量所存储的值与它们两者则是不同的概念。在C语言中我们可以对一变量使用&来获取一个变量的地址,在变量前添加一个*号表示指针变量:
+
+```c
+int a;
+int *pointer; /*定义一个指针变量*/
+pointer=&a;	/*将a的地址赋予指针变量,此时的*pointer就等价于变量a*/
+*pointer=1;	/*因为*pointer等价于a，因此该语句等价于a=1*/
+```
+
+我们需要注意的是，我们可以在定义指针变量后在为之赋予指定变量的指针，如上文中的pointer=&a，亦可以在定义时赋予，如int *pointer=&a。因此:
+
+```c
+int a;
+int *pointer1=&a; 
+/*<=等价于=>*/ 
+int *pointer2;
+pointer2=&a; 
+```
+
+**不过需要注意的是，当我们使用后者时，pointer前不可添加***；
+
+前面我们不允许在赋予指针变量变量地址时添加*是因为我们希望为它赋值时添加,如前文所示:
+
+```c
+int a;
+int *pointe&a;
+*pointer=1;	
+```
+
+因此我们可以得到一个结论:
+
+```text
+在C语言中，指针变量直接指向对应变量的地址。而*指针变量则可以视作时被指向的变量,即若指针变量pointer指向变量a，则*pointer<==>a
+```
+
+前文中我们定义了指针变量，由此得知指针变量的定义如此:
+
+**基类型 *指针变量名；**
+
+其中的*表示该变量所定义的是一个指针变量，而基类型表示的是该指针变量所需要指向的变量的类型名，注意，**一个指针变量只能储存与基类型相同类型的变量的指针**。
+
+&：取地址符，在变量前添加该标识符将获取该变量的地址
+
+*:指针运算符，对于一个指针使用该标识符将会获取该指针所储存的值
+
+取地址符和指针运算符时可逆的关系，两者会相互抵消，只是针对的对象时不同的，比如&只能直接置于变量之前，而*只能直接置于指针之前。如:
+
+```c
+int a;
+int *pr=&a;
+/*
+此时
+	*&a<==>a
+	&*p<==>p 或者其他 &a
+*/
+```
+
+**注:不能直接使用没有被赋予初始值的指针变量:**
+
+```c
+int *p;
+*p=3;		/*注意，该赋值为非法赋值，因为指针变量p还未被赋值*/
+```
+
+### 指针与数组
+
+每一个变量都存在一个地址，数组也不例外，一个数组世纪上就是一个由一块连续的内存单元所组成的。其中**<u>数组名便代表了整个数组的首地址</u>**。而所谓的数组指针实际上也就是首个数组元素的地址即起始地址。因此我们可以得出以下
+
+结论:
+
+```c
+int a[10];
+int *p;
+
+/*以下两者等价*/
+p=a;
+p=&a[0]
+```
+
+数组指针的计算逻辑:
+
+**a[i]  <=等价于=> *(a+i\*t)**
+
+**a\[i][j]<=等价于=>\*（*(a+i\*t)+j\*t)**
+
+**注:**(<u>此时t为该数据类型的字节大小</u>)
+
+**注:****指针变量也可以使用++或者--来改变其自身的值，而数组变量则不可行:**
+
+```c
+int a[]={1,2,3,4,5};
+int *p=a;
+p++; /*合法操作*/
+a++;	/*非法操作*/
+```
+
+### 指针与字符串
+
+字符串，实际上就是一个数组，只不过时一个字符数组而已。因此它的存储模型和与指针的关系是类似的。我们可以使用指针或字符数组直接定义字符串:
+
+```C
+#include <stdio.h>
+int main(void){
+    char * str;
+    str="Hello World";
+    printf("%s\n",str);
+    char arr[]="Hello World";
+    char * pointer=arr;
+    printf("%s\n",pointer);
+    return 0;
+}
+```
+
+**注:'="\\0"代表字符串的结尾**：
+
+```c
+#include <stdio.h>
+/*计算字符串的长度*/
+size_t stringLength(const char *str) {
+    size_t length = 0;
+    while (str[length] != '\0') {
+        length++;
+    }
+    return length;
+}
+
+int main() {
+    const char *str = "Hello, World!";
+    size_t length = stringLength(str);
+    printf("Length of the string: %zu\n", length);
+    return 0;
+}
+
+```
+
+### 函数与指针
+
+实际上函数与字符串或者数组量也是类似的，它也是占用一段连续内存空间的"变量"，函数名也是其所占用的内存区域的首地址，因此我们也可以将函数储存在一个指针变量之中，这种变量我称之为**函数指针**，它的定义格式为:
+
+```c
+#include <stdio.h>
+int add(int a,int b){
+    return a+b;
+}
+int main(void){
+    /* 类型说明符 （*指针变量名）（参数变量列表） */
+    int (*ADD_VALUE)(int,int);
+    int a=10,b=2;
+    ADD_VALUE=add;
+    printf("a+b=%d\n",ADD_VALUE(a,b));
+    return 0;
+}
+```
+
+**注:**
+
+* 函数的指针变量不可以像数组的指针那样进行算术运算，它的移动是无意义的。
+* 我们指针变量的括号是不可省略的"（*指针变量名）"
+
+### 多级指针
+
+指针的核心在于指向关系，如果存在A指向B(A=&B)，则A的值便是B的地址，如果我们希望访问B则可以通过*来实现，而此时如果还存在B指向C的关系(B=&C)。并且C是用以储存基本类型或者诸如数组元素的值，则此时C被称为**一级指针变量**，B和A分别被称之为二级和三级指针变量，一个N级直至如果希望最后得到真正的储存值也就是一级指针变量的值便需要不断地追溯自身指向的变量，直到一级指针变量。
+
+```shell
+    n级指针                二级指针    一级指针 非指针型变量 
+      pn                     p2         p1       x
++--------------+          +-----+     +----    +---+
+|n-1级指针的地址|-- ... -> | &p1 |--->| &x |--->| 7 |
++--------------+          +-----+     +----    +---+
+```
+
+一级变量因为需要指向一个非指针变量因此有一个\*,而二级和三级分别需要指向一级和二级指针变量因此分别需要两个和三个\*：
+
+```c
+/*非指针变量*/
+int x=7;
+/*一级指针变量*/
+int *p1=&x;
+/*二级指针变量*/
+int **p2=&p1;
+/*三级指针变量*/
+int ***p3=&p2;
+```
+
+一般情况下，C语言中只会使用到三级指针变量。除此之外我们需要额外知晓:C语言对于指针的要求较为苛刻，只能一级指针指向非指针变量，二级指针变量指向一级指针变量...
+
+### 指针数组
+
+所谓的指针数组便是存储指针的数组，它是一组有序指针的集合，其中的所有的元素都是指向相同类型数据的指针，其一般形式为:
+
+```c
+/*类型说明符 *数组名[数组长度];*/
+```
+
+因为指针数组中每一个元素都是一个地址，而数组的数组名又是指向首个元素的指针，即指向一级指针的指针，因此是一个二级指针。因此**指针数组的数组名即为一个二级指针:**
+
+```c
+#include <stdio.h>
+#define ARR_LEN 5
+int main(void) {
+	/*定义一个int数组*/
+    int a[ARR_LEN] = {12,23,44,27,94};
+	/*定义一个指针数组。注意，这里的num实际上是一个二级指针，但是这个数组却只是存储一级指针的数组因此数组定义时只有一个**/
+    int *num[ARR_LEN];
+	for (size_t i = 0; i < ARR_LEN; i++)
+	{
+		num[i] = &a[i];
+	}
+    /*上文提到了num是一个二级指针，因此这里接收num的p需要是一个二级zhi*/
+	int **p, i;
+	p = num;
+	for (size_t i = 0; i < ARR_LEN; i++)
+	{
+		printf("%d,", **p);
+		p++;
+	}
+	return 0;
+}
+```
+
+## 结构体和共用体
+
+在Java中我们可以使用类来抽象化一个实体，在C语言中我们则可以使用结构体来近似的表示类的概念。而之所以存在结构体的概念也与类的初衷很类似。
+
+### 结构体的定义和初始化
+
+!["结构体存储结构"](.\Structure_in_C_1.jpg)
+
+#### 定义
+
+1. 先定义结构体类型再定义结构体变量
+
+   ```c
+   #include <stdio.h>
+   int main(void){
+       /*struct:定义结构体的关键字,stu即为结构体类型*/
+       struct stu  
+       {
+           char num[10];
+           char name[20];
+           char sex;
+           int age;
+           float score;
+       };      /*定义结构体类型*/
+   	
+       /*根据结构体类型声明结构体变量*/
+       struct stu alpha,beta;
+       return 0;
+   }
+   ```
+
+   
+
+2. 定义结构体类型的同时定义结构体变量
+
+   ```c
+   #include <stdio.h>
+   int main(void){
+       /*结构体类型*/
+       struct stu
+       {
+           char num[10];
+           char name[20];
+           char sex;
+           int age;
+           float score;
+       }alpha,beta;/*结构体变量*/
+       
+   }
+   ```
+
+   
+
+3. 不定义结构体类型直接定义结构体变量
+
+   ```c
+   #include <stdio.h>
+   int main(void){
+       struct
+       {
+           char num[10];
+           char name[20];
+           char sex;
+           int age;
+           float score;
+       }alpha,beta;/*结构体变量*/
+       
+   }
+   ```
+
+   我们可以在一个结构体内定义其他结构体的结构体变量：
+
+   ```c
+   #include <stdio.h>
+   
+   int main(void){
+       struct date
+       {
+           int month;
+           int day;
+           int year;
+       };
+   
+       struct
+       {
+           char num[10];
+           char name[20];
+           char sex;
+           struct date birthday;
+           float score;
+       }alpha,beta;
+   }
+   ```
+
+   **初始化结构体变量**
+   
+   ```c
+   #include <stdio.h>
+   
+   int main(void){
+       struct
+       {
+           char num[10];
+           char name[20];
+           char sex;
+           float score;
+       }alpha,beta={
+           "2232321",
+           "rongxin",
+           'M',
+           83.5
+       };
+       alpha=beta;
+       printf("Number is %s\nName=%s\n",alpha.num,alpha.name);
+       printf("Sex is %c\nScore=%4.1f\n",alpha.sex,alpha.score);
+       return 0;
+   }
+   ```
+   
+   **输出结果**
+
+```shell
+Number is 2232321
+Name=rongxin
+Sex is M
+Score=83.5
+```
+
+### 单独赋值
+
+```c
+#include <stdio.h>
+struct stu{
+    char num[10];
+    char name[20];
+    char sex[10];
+    int age;
+    float scores;
+};
+int main(void){
+    struct stu alpha;
+    /*注意数组名是指针(数组的第一个元素的指针)*/
+    *alpha.num=20201100;
+    *alpha.name="rongxin";
+    *alpha.sex="male";
+    alpha.age=23;
+    alpha.scores=83.5;
+    return 0;
+}
+```
+
+#### 当结构体包含其他结构体类型时的赋值
+
+```c
+#include <stdio.h>
+struct date
+{
+    int month;
+    int day;
+    int year;
+};
+
+struct stu{
+    char num[10];
+    char name[20];
+    char sex[10];
+    int age;
+    struct date birthday;
+    float scores;
+};
+int main(void){
+    struct date birthday;
+    birthday.month=9;
+    birthday.day=4;
+    birthday.year=2000;
+
+    struct stu alpha;
+    *alpha.num=20201100;
+    *alpha.name="rongxin";
+    *alpha.sex="male";
+    alpha.age=23;
+    /*赋予其他结构体类型属性值*/
+    alpha.birthday=birthday;
+    alpha.scores=83.5;
+    return 0;
+}
+```
+
+### 结构体数组
+
+结构体实际上可以立即为我们Java中的类，自然也就是可以认为是一种自定义的**类型**,因此我们可以创建同类型的数组即结构体数组:
+
+```c
+#include <stdio.h>
+
+struct Person{
+    char name[20];
+    char gender[10];
+    int age;
+};
+
+#define ARR_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
+int main(void){
+    struct Person persons[]={
+        {name:"rongxin",gender:"male",age:23},
+        {name:"yang",gender:"male",age:26},
+        {name:"ning",gender:"female",age:22}
+    };
+    size_t size=ARR_SIZE(persons);
+    for (size_t i = 0; i < size; i++)
+    {
+        struct Person person=persons[i];
+        printf("{\nname:%s,\ngender:%s,\nage:%d\n},\n",person.name,person.gender,person.age);
+    }
+    // printf("size is %zu\n",ARR_SIZE(persons)); 使用sizeof得到的结果需要使用%zu接收
+    return 0; 
+}
+```
+
+### 指向结构体的指针
+
+从结构体的存储结构上我们可以得知结构体的存储逻辑实际上和数组是类似的，数组的名称事实上是指向数组第一个元素的地址(指针)，因此我们使用带*号的变量即可储存数组名。对于结构体而言，它的指针变量指的**则不是**结构体变量的首地址，它更像是基本数据类型，指代的就是该结构(类型)的元素值，因此我们可以使用"."来调用它的各个成员。
+
+定义结构体指针变量的格式:
+
+**struct 结构体类型名 *结构体指针变量名;**
+
+我们如果希望将指针变量指向一个结构体变量的首元素的地址则可以:
+
+```c
+#include <stdio.h>
+
+struct person{
+    char name[20];
+    int age;
+};
+
+int main(void){
+   struct person p={name:"rongxin",age:23};
+    struct person *ponter=&p;	//取出首地址并赋予指针变量
+    int arr[3]={2,4,5};
+
+    // printf("name is %s\n",p);	注意此时p既不代指首元素也不代指首元素地址
+    printf("first is %d\n",*arr);	//数组名代指首元素地址
+    printf("{name:%s,age:%d}\n",p.name,(*ponter).age);
+    printf("{name:%s,age:%d}\n",p.name,ponter->age); //与前者功能一致表示指向
+    printf("{name:%s,age:%d}\n",p.name,(ponter++)->age); //输出age
+    struct person *another=ponter++;
+    printf("{name:%s,age:%d}\n",p.name,(another++)->age); //输出地址，这意味着此时another已经超出了person的范围
+
+    return 0;
+}
+```
+
